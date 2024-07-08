@@ -1,13 +1,32 @@
 #include "interface.h"
 
 void Configuration::inputICAO() {
-	uint8_t address[]{ 0,0,0,0,0,0 };
+	uint8_t address[6];      // ICAO address as array of digits
 	uint8_t base(16);        // hexademical base
+
+	codeToWord(ICAO, address, sizeof(address), base);
+
+	// input some title onto display (Andrew)
 
 	controlPanel(address, sizeof(address), base);
 
+	ICAO = wordToCode(address, sizeof(address), base);
 }
 
+void Configuration::inputCodeA() {
+	uint8_t code[4];        // code A array of digits
+	uint8_t base(8);        // hexademical base
+
+	codeToWord(ICAO, code, sizeof(code), base);
+
+	// input some title onto display (Andrew)
+
+	controlPanel(code, sizeof(code), base);
+
+	ICAO = wordToCode(code, sizeof(code), base);
+}
+
+// It's on you, Andrew
 void showInput(const uint8_t data[], const uint8_t dataLength, const uint8_t base) {
 	system("cls");
 
@@ -74,4 +93,25 @@ void controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base) 
 			break;
 		}
 	}
+}
+
+void codeToWord(uint32_t code, uint8_t word[], const uint8_t wordLength, const uint8_t base) {
+	uint8_t i(wordLength - 1);
+
+	while (code > 0) {
+		word[i] = code % base;
+		code /= base;
+		i--;
+	}
+}
+
+uint32_t wordToCode(uint8_t word[], const uint8_t wordLength, const uint8_t base) {
+	memset(word, 0, wordLength * sizeof(uint8_t)); // set all elements of array to 0
+
+	uint32_t res = 0;
+	for (int i = 0; i < wordLength; i++) {
+		res += word[i] * pow(base, wordLength - i - 1);
+	}
+
+	return res;
 }

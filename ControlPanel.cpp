@@ -1,10 +1,10 @@
 
 #include "interface.h"
 
-int main()
-{
-    Configuration con;
-    con.inputICAO();
+int main() {
+	Configuration con;
+	con.inputICAO();
+	con.inputCodeA();
 
-    return 0;
+	return 0;
 }
