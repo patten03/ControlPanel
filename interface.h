@@ -19,10 +19,26 @@ struct Configuration {
 	uint32_t ICAO;
 	uint16_t codeA;
 	uint16_t codeVFR;
+	char flightNumber[8];
+	uint8_t velocityCategory;
+	ACCategory ACCat;
+
+	// sensor surface/air
+	// SIL
+
+	// aircraft size
+	uint16_t length;
+	uint16_t width;
 
 	void inputICAO();
 	void inputCodeA();
 	void inputCodeVFR();
+};
+
+struct ACCategory { // A/C - aircraft
+	uint8_t setA;
+	uint8_t setB;
+	uint8_t setC;
 };
 
 
