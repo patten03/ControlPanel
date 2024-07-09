@@ -2,10 +2,8 @@
 #include "interface.h"
 
 int main() {
-	Configuration con;
-	con.init();
-	con.inputICAO();
-	con.inputCodeA();
+	mainMenu();
+	
 
 	return 0;
 }

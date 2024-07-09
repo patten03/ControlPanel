@@ -12,14 +12,15 @@ enum keys {
 	Off,
 	SBY,
 	GND,
-	On,
+	On = 'q',
 	Alt,
 
-	SIGN,                                                    // (ZNAK)
-	INPUT,                                                   // (VVOD)
-	VFR,                                                     // visual flight rules (PVP)
-	FNK = 27, FNK_hold10sec,                                 // functional button
-	encoderLeft = 'a', encoderRight = 'd', encoderEnter = 13 // encoder
+	// Other
+	SIGN,                                                     // (ZNAK)
+	INPUT = 's',                                              // (VVOD)
+	VFR,                                                      // visual flight rules (PVP)
+	FNK = 'a', FNK_hold10sec,                                 // functional button
+	encoderLeft = 'd', encoderRight = 'f', encoderEnter = ' ' // encoder
 };
 
 struct ACCategory { // A/C - aircraft
@@ -49,6 +50,7 @@ struct Configuration {
 	void inputICAO();
 	void inputCodeA();
 	void inputCodeVFR();
+	// void inputFlightNumber();
 	void inputVelocityCategory();
 	void inputACCategory();
 	// sensor surface/air
@@ -56,9 +58,11 @@ struct Configuration {
 	void inputSize();
 };
 
+void mainMenu();
+
 void showInput(const uint8_t data[], const uint8_t dataLength, const uint8_t base); // It's on you, Andrew
 uint8_t receiveKey();                                                               // It's for Pavel
-void controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base);
+uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base);
 
 void codeToWord(uint32_t code, uint8_t word[], const uint8_t wordLength, const uint8_t base);
 uint32_t wordToCode(uint8_t word[], const uint8_t wordLength, const uint8_t base);
