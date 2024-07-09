@@ -1,5 +1,24 @@
 #include "interface.h"
 
+void Configuration::init(){
+	ICAO = 0;
+	codeA = 0;
+	codeVFR = 0;
+
+	memset(flightNumber, 0, sizeof(flightNumber));
+	velocityCategory = 0;
+
+	ACCat.setA = 0;
+	ACCat.setB = 0;
+	ACCat.setC = 0;
+
+	// sensor surface/air
+	// SIL
+
+	length = 0;
+	width = 0;
+}
+
 void Configuration::inputICAO() {
 	uint8_t address[6];      // ICAO address as array of digits
 	uint8_t base(16);        // hexademical base
@@ -96,6 +115,7 @@ void controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base) 
 }
 
 void codeToWord(uint32_t code, uint8_t word[], const uint8_t wordLength, const uint8_t base) {
+	memset(word, 0, wordLength);
 	uint8_t i(wordLength - 1);
 
 	while (code > 0) {
@@ -110,7 +130,7 @@ uint32_t wordToCode(uint8_t word[], const uint8_t wordLength, const uint8_t base
 
 	uint32_t res = 0;
 	for (int i = 0; i < wordLength; i++) {
-		res += word[i] * pow(base, wordLength - i - 1);
+		res += word[i] * uint32_t(pow(base, wordLength - i - 1));
 	}
 
 	return res;

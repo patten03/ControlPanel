@@ -8,11 +8,24 @@
 
 // TODO after import to keil you have to change keys values
 enum keys {
+	// Toggle of modes
+	Off,
+	SBY,
+	GND,
+	On,
+	Alt,
+
 	SIGN,                                                    // (ZNAK)
 	INPUT,                                                   // (VVOD)
 	VFR,                                                     // visual flight rules (PVP)
 	FNK = 27, FNK_hold10sec,                                 // functional button
 	encoderLeft = 'a', encoderRight = 'd', encoderEnter = 13 // encoder
+};
+
+struct ACCategory { // A/C - aircraft
+	uint8_t setA;
+	uint8_t setB;
+	uint8_t setC;
 };
 
 struct Configuration {
@@ -30,17 +43,18 @@ struct Configuration {
 	uint16_t length;
 	uint16_t width;
 
+	void init();
+	void loadFromUART();
+
 	void inputICAO();
 	void inputCodeA();
 	void inputCodeVFR();
+	void inputVelocityCategory();
+	void inputACCategory();
+	// sensor surface/air
+	// SIL
+	void inputSize();
 };
-
-struct ACCategory { // A/C - aircraft
-	uint8_t setA;
-	uint8_t setB;
-	uint8_t setC;
-};
-
 
 void showInput(const uint8_t data[], const uint8_t dataLength, const uint8_t base); // It's on you, Andrew
 uint8_t receiveKey();                                                               // It's for Pavel
