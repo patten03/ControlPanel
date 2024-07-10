@@ -127,8 +127,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ControlPanel.cpp" />
-    <ClCompile Include="interface.cpp" />
+    <ClCompile Include="ControlPanel.c" />
+    <ClCompile Include="interface.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="interface.h" />

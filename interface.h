@@ -2,9 +2,10 @@
 #define INTERFACE
 
 #include <stdio.h>
-#include <iostream>
 #include <conio.h>
-#include <cmath>
+#include <math.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 // TODO after import to keil you have to change keys values
 enum keys {
@@ -35,7 +36,7 @@ struct Configuration {
 	uint16_t codeVFR;
 	char flightNumber[8];
 	uint8_t velocityCategory;
-	ACCategory ACCat;
+	struct ACCategory ACCat;
 
 	// sensor surface/air
 	// SIL
@@ -43,20 +44,22 @@ struct Configuration {
 	// aircraft size
 	uint16_t length;
 	uint16_t width;
-
-	void init();
-	void loadFromUART();
-
-	void inputICAO();
-	void inputCodeA();
-	void inputCodeVFR();
-	// void inputFlightNumber();
-	// void inputVelocityCategory();
-	void inputACCategory();
-	// sensor surface/air
-	// SIL
-	void inputSize();
 };
+
+// structure functions
+void init(struct Configuration* con);
+void loadFromUART(struct Configuration* con);
+
+void inputICAO(uint32_t* ICAO);
+void inputCodeA(uint16_t* codeA);
+void inputCodeVFR(uint16_t* codeVFR);
+// void inputFlightNumber();
+// void inputVelocityCategory();
+void inputACCategory(struct ACCategory* ACCat);
+// sensor surface/air
+// SIL
+void inputSize(uint16_t* length, uint16_t* width);
+
 
 void mainMenu();
 

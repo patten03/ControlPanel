@@ -1,80 +1,80 @@
 #include "interface.h"
 
-void Configuration::init(){
-	ICAO = 0;
-	codeA = 0;
-	codeVFR = 0;
+void init(struct Configuration* con) {
+	con->ICAO = 0;
+	con->codeA = 0;
+	con->codeVFR = 0;
 
-	memset(flightNumber, 0, sizeof(flightNumber));
-	velocityCategory = 0;
+	memset(con->flightNumber, 0, sizeof(con->flightNumber));
+	con->velocityCategory = 0;
 
-	ACCat.setA = 0;
-	ACCat.setB = 0;
-	ACCat.setC = 0;
+	con->ACCat.setA = 0;
+	con->ACCat.setB = 0;
+	con->ACCat.setC = 0;
 
 	// sensor surface/air
 	// SIL
 
-	length = 0;
-	width = 0;
+	con->length = 0;
+	con->width = 0;
 }
 
-void Configuration::inputICAO() {
+void inputICAO(uint32_t* ICAO) {
 	uint8_t address[6];      // ICAO address as array of digits
-	uint8_t base(16);        // hexademical base
+	uint8_t base = 16;        // hexademical base
 
-	codeToWord(ICAO, address, sizeof(address), base);
+	codeToWord(*ICAO, address, sizeof(address), base);
 
 	// input some title onto display (Andrew)
 
 	uint8_t save = controlPanel(address, sizeof(address), base);
 
 	if (save == INPUT) {
-		ICAO = wordToCode(address, sizeof(address), base);
+		*ICAO = wordToCode(address, sizeof(address), base);
 	}
 }
 
-void Configuration::inputCodeA() {
+void inputCodeA(uint16_t* codeA) {
 	uint8_t code[4];        // code A array of digits
-	uint8_t base(8);        // octal base
+	uint8_t base = 8;        // octal base
 
-	codeToWord(codeA, code, sizeof(code), base);
+	codeToWord(*codeA, code, sizeof(code), base);
 
 	// input some title onto display (Andrew)
 
 	uint8_t save = controlPanel(code, sizeof(code), base);
 
 	if (save == INPUT) {
-		codeA = wordToCode(code, sizeof(code), base);
+		*codeA = wordToCode(code, sizeof(code), base);
 	}
 }
 
-void Configuration::inputCodeVFR() {
+void inputCodeVFR(uint16_t* codeVFR) {
 	uint8_t code[4];        // code VFR array of digits
-	uint8_t base(8);        // octal base
+	uint8_t base = 8;        // octal base
 
-	codeToWord(codeA, code, sizeof(code), base);
+	codeToWord(*codeVFR, code, sizeof(code), base);
 
 	// input some title onto display (Andrew)
 
 	uint8_t save = controlPanel(code, sizeof(code), base);
 
 	if (save == INPUT) {
-		codeA = wordToCode(code, sizeof(code), base);
+		*codeVFR = wordToCode(code, sizeof(code), base);
 	}
 }
 
-void Configuration::inputACCategory() {
+void inputACCategory(struct ACCategory* ACCat) {
 	uint8_t tempSetA, tempSetB, tempSetC;      // 3 sets of categories
-	uint8_t base(8);            // octal base
-	uint8_t *category_ptr;
+	uint8_t base = 8;            // octal base
+	uint8_t* category_ptr;
 
 }
 
-void mainMenu(){
+void mainMenu() {
 	uint8_t mode = Off;
-	Configuration con;
-	con.init();
+	struct Configuration con;
+	init(&con);
 
 	printf("Turn on device by On button\n");
 	while (mode == Off) {
@@ -93,9 +93,9 @@ void mainMenu(){
 	}
 
 	while (mode != Off) {
-		con.inputICAO();
-		con.inputCodeA();
-		con.inputCodeVFR();
+		inputICAO(&con.ICAO);
+		inputCodeA(&con.codeA);
+		inputCodeVFR(&con.codeVFR);
 		// con.inputFlightNumber();
 		// con.inputVelocityCategory();
 		// con.inputACCategory();
@@ -123,11 +123,11 @@ uint8_t receiveKey() {
 uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base) {
 	uint8_t res; // last inputed key
 
-	bool done(false);        // loop value
-	uint8_t iterator(0);     // index of digit (left to rigth)
+	bool done = false;       // loop value
+	uint8_t iterator = 0;     // index of digit (left to rigth)
 
 	uint8_t key = 0;
-	
+
 	// choose page with setting or move to next
 	showInput(data, dataLength, base);
 	printf("To change settings press INPUT, in order to move to next page press FNK\n");
@@ -135,7 +135,7 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 		key = receiveKey();
 		res = key;
 	}
-		
+
 
 	while (!done && key != FNK) {
 		// show the current result
@@ -198,7 +198,7 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 
 void codeToWord(uint32_t code, uint8_t word[], const uint8_t wordLength, const uint8_t base) {
 	memset(word, 0, wordLength); // set all elements of array to 0
-	uint8_t i(wordLength - 1);
+	uint8_t i = wordLength - 1;
 
 	while (code > 0) {
 		word[i] = code % base;
@@ -210,7 +210,7 @@ void codeToWord(uint32_t code, uint8_t word[], const uint8_t wordLength, const u
 uint32_t wordToCode(uint8_t word[], const uint8_t wordLength, const uint8_t base) {
 	uint32_t res = 0;
 	for (int i = 0; i < wordLength; i++) {
-		res += word[i] * uint32_t(pow(base, wordLength - i - 1));
+		res += word[i] * pow(base, wordLength - i - 1);
 	}
 
 	return res;
