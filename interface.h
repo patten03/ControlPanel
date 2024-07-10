@@ -51,7 +51,7 @@ struct Configuration {
 	void inputCodeA();
 	void inputCodeVFR();
 	// void inputFlightNumber();
-	void inputVelocityCategory();
+	// void inputVelocityCategory();
 	void inputACCategory();
 	// sensor surface/air
 	// SIL

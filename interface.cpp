@@ -36,7 +36,7 @@ void Configuration::inputICAO() {
 
 void Configuration::inputCodeA() {
 	uint8_t code[4];        // code A array of digits
-	uint8_t base(8);        // hexademical base
+	uint8_t base(8);        // octal base
 
 	codeToWord(codeA, code, sizeof(code), base);
 
@@ -47,6 +47,28 @@ void Configuration::inputCodeA() {
 	if (save == INPUT) {
 		codeA = wordToCode(code, sizeof(code), base);
 	}
+}
+
+void Configuration::inputCodeVFR() {
+	uint8_t code[4];        // code VFR array of digits
+	uint8_t base(8);        // octal base
+
+	codeToWord(codeA, code, sizeof(code), base);
+
+	// input some title onto display (Andrew)
+
+	uint8_t save = controlPanel(code, sizeof(code), base);
+
+	if (save == INPUT) {
+		codeA = wordToCode(code, sizeof(code), base);
+	}
+}
+
+void Configuration::inputACCategory() {
+	uint8_t tempSetA, tempSetB, tempSetC;      // 3 sets of categories
+	uint8_t base(8);            // octal base
+	uint8_t *category_ptr;
+
 }
 
 void mainMenu(){
@@ -73,7 +95,7 @@ void mainMenu(){
 	while (mode != Off) {
 		con.inputICAO();
 		con.inputCodeA();
-		// con.inputCodeVFR();
+		con.inputCodeVFR();
 		// con.inputFlightNumber();
 		// con.inputVelocityCategory();
 		// con.inputACCategory();
