@@ -68,8 +68,7 @@ void inputSize(uint16_t* length, uint16_t* width);
 void mainMenu();
 
 void putStrDirectly(uint8_t y, char str[], uint8_t strSize);
-void showInput(const uint8_t data[], const uint8_t dataLength, const uint8_t base); // It's on you, Andrew
-uint8_t receiveKey();                                                               // It's for Pavel
+uint8_t receiveKey();
 uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base);
 
 void codeToWord(uint32_t code, char word[], const uint8_t wordLength, const uint8_t base);

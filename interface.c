@@ -1,5 +1,6 @@
 #include "interface.h"
 
+// for work with 
 extern const char base16[] = "0123456789ABCDEF";
 
 void init(struct Configuration* con) {
@@ -124,16 +125,6 @@ void mainMenu() {
 	}
 }
 
-// It's on you, Andrew
-void showInput(const uint8_t data[], const uint8_t dataLength, const uint8_t base) {
-	system("cls");
-
-	for (int i = 0; i < dataLength - 1; i++) {
-		printf("%X ", data[i]);
-	}
-	printf("\n");
-}
-
 // it's only for console, on stm32 you need to replace it
 void putStrDirectly(uint8_t y, char str[], uint8_t strSize) {
 	DWORD dw;
@@ -158,14 +149,14 @@ uint8_t receiveKey() {
 uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base) {
 	uint8_t res; // last inputed key
 
-	bool done = false;       // loop value
+	bool done = false;        // loop value
 	uint8_t iterator = 0;     // index of digit (left to rigth)
 
 	uint8_t key = 0;
 
-	// choose page with setting or move to next
-
 	putStrDirectly(2, data, dataLength);
+
+	// choose page with setting or move to next
 	while (key != FNK && key != Input) {
 		key = receiveKey();
 		res = key;
@@ -175,7 +166,6 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 	while (!done && key != FNK) {
 		// show the current result
 		putStrDirectly(2, data, dataLength);
-		//showInput(data, dataLength, base);
 
 		key = receiveKey();
 
@@ -194,13 +184,13 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 			else if (data[iterator] == base16[10])    // case, when number equal A and it's necessary to change to 9
 				data[iterator] = base16[9];
 			else
-				data[iterator]--;                    // rest cases
+				data[iterator]--;                     // rest cases
 		} break;
 
 		case encoderRight: {
 			if (data[iterator] == base16[base - 1])   // case, when we need to change to 0
 				data[iterator] = base16[0];
-			else if (data[iterator] == base16[9])    // case, when number equal 9 and it's necessary to change to A
+			else if (data[iterator] == base16[9])     // case, when number equal 9 and it's necessary to change to A
 				data[iterator] = base16[10];
 			else
 				data[iterator]++;                     // rest cases
