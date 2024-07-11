@@ -79,17 +79,55 @@ void inputCodeVFR(uint16_t* codeVFR) {
 }
 
 void inputSize(uint16_t* length, uint16_t* width) {
-	uint8_t tempLength[3]; // array of digits for AC length
-	uint8_t tempWidth[3];  // array of digits for AC width
+	char tempLength[4]; // array of digits for A/C length
+	char tempWidth[4];  // array of digits for A/C width
 	uint8_t base = 10;     // demical base
 
 	codeToWord(*length, tempLength, sizeof(tempLength), base);
 	codeToWord(*width, tempWidth, sizeof(tempWidth), base);
 
-
-
 	
+	// title with current size
+	char initialSize[
+		sizeof(tempLength) +
+		sizeof(tempLength) +
+		sizeof("L W")
+		- 2
+	]; 
+	strcpy_s(initialSize, sizeof(initialSize), "L");
+	strcat_s(initialSize, sizeof(initialSize), tempLength);
+	strcat_s(initialSize, sizeof(initialSize), " W");
+	strcat_s(initialSize, sizeof(initialSize), tempWidth);
 
+	// input some title onto display (Andrew)
+	putStrDirectly(0, "Size, m", sizeof("Size, m") + 1);
+	putStrDirectly(2, initialSize, sizeof(initialSize) + 1);
+	putStrDirectly(4, "Configuration", sizeof("Configuration") + 1);
+
+
+	uint8_t key = 0;
+	// receive key in order to get to menu or go to next 
+	while (key != FNK && key != Input) {
+		key = receiveKey();
+	}
+
+	// if user chose Input, change parametrs
+	if (key == Input) {
+		system("cls");
+
+		putStrDirectly(0, "Length, m", sizeof("Length, m") + 1);
+		putStrDirectly(4, "Configuration", sizeof("Configuration") + 1);
+		uint8_t save1 = controlPanel(tempLength, sizeof(tempLength), base);
+		putStrDirectly(0, "Width, m", sizeof("Width, m") + 1);
+		uint8_t save2 = controlPanel(tempWidth, sizeof(tempWidth), base);
+
+		if (save1 == Input)
+			*length = wordToCode(tempLength, sizeof(tempLength), base);
+		if (save2 == Input)
+			*width = wordToCode(tempWidth, sizeof(tempWidth), base);
+	}
+
+	system("cls");
 }
 
 void mainMenu() {
