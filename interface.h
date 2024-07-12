@@ -34,11 +34,33 @@ enum displayRow {
 	bottom = 4
 };
 
+
+// Sensor air-surface
+extern const char *sensorModesArray[];
+extern const uint8_t sizeSensorArray;
+enum sensorAS_Mode { // A/S - air-surface
+	sensorOn = 0,
+	manualMode = 1,
+	sensorOff = 2
+};
+
+
+//  SIL - Safety Integrity Level
+extern const char* SIL_Array[];
+extern const uint8_t sizeSIL_Array;
+enum SIL_Level {
+	low = 0,
+	medium = 1,
+	high = 2
+};
+
+// A/C category
 struct ACCategory { // A/C - aircraft
-	char set;
+	char set;           // set can be A, B and C (D reserved)
 	uint8_t category;
 };
 
+// configuration of A/C
 struct Configuration {
 	uint32_t ICAO;
 	uint16_t codeA;
@@ -46,9 +68,8 @@ struct Configuration {
 	char flightNumber[9];
 	uint8_t velocityCategory;
 	struct ACCategory ACCat;
-
-	// sensor surface/air
-	// SIL
+	uint8_t sensorAS;
+	uint8_t SIL;
 
 	// aircraft size
 	uint16_t length;
@@ -59,14 +80,15 @@ struct Configuration {
 void init(struct Configuration* con);
 void loadFromUART(struct Configuration* con);
 
+// structure functions, submenus to input data
 void inputICAO(uint32_t* ICAO);
 void inputCodeA(uint16_t* codeA);
 void inputCodeVFR(uint16_t* codeVFR);
 void inputFlightNumber(char flightNumber[], uint8_t numLength);
 // void inputVelocityCategory();
 // void inputACCategory(struct ACCategory* ACCat);
-// sensor surface/air
-// SIL
+void inputSensorAS(uint8_t* sensorMode);
+void inputSIL(uint8_t SIL_value);
 void inputSize(uint16_t* length, uint16_t* width);
 
 
@@ -75,6 +97,7 @@ void mainMenu();
 void putStrDirectly(uint8_t y, char str[], uint8_t strSize);
 uint8_t receiveKey();
 uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base);
+uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize);
 
 void codeToWord(uint32_t code, char word[], const uint8_t wordLength, const uint8_t base);
 uint32_t wordToCode(char word[], const uint8_t wordLength, const uint8_t base);

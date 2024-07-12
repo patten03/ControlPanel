@@ -1,7 +1,15 @@
 #include "interface.h"
 
-/* To input octal, demical and hexademical bases and letters*/
+// In order to input octal, demical and hexademical bases and letters (including space)
 extern const char baseAndLetters[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+
+// Sensor air/surface
+extern const char * sensorModesArray[] = {"Yes", "Manual mode", "No"};
+extern const uint8_t sizeSensorArray = 3;
+
+// SIL
+extern const char* SIL_Array[] = { "low", "medium", "high" };
+extern const uint8_t sizeSIL_Array = 3;
 
 void init(struct Configuration* con) {
 	con->ICAO = 0;
@@ -137,6 +145,20 @@ void inputACCategory(struct ACCategory* ACCat) {
 	}
 }
 
+//void inputSensorAS(uint8_t* sensorMode) {
+//	uint8_t tempSensorMode;  // Mode of air-surface sensor
+//
+//	// input some title onto display (Andrew)
+//	putStrDirectly(top, "Sensor A-S", sizeof("Sensor A-S"));
+//	putStrDirectly(middle, "Configuration", sizeof("Configuration"));
+//
+//	uint8_t save = chooseRegime(tempSensorMode, sensorModesArray, sizeSensorArray);
+//
+//	if (save == Input) {
+//		*sensorMode = tempSensorMode;
+//	}
+//}
+
 void inputSize(uint16_t* length, uint16_t* width) {
 	char tempLength[4]; // array of digits for A/C length
 	char tempWidth[4];  // array of digits for A/C width
@@ -244,7 +266,7 @@ uint8_t receiveKey() {
 }
 
 uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base) {
-	uint8_t res; // last inputed key
+	uint8_t res;              // last inputed key
 
 	bool done = false;        // loop value
 	uint8_t iterator = 0;     // index of digit (left to rigth)
@@ -355,3 +377,55 @@ uint32_t wordToCode(char word[], const uint8_t wordLength, const uint8_t base) {
 	}
 	return res;
 }
+
+//uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize) {
+//	uint8_t res;              // last inputed key
+//
+//	bool done = false;        // loop value
+//	uint8_t iterator = 0;     // index of digit (left to rigth)
+//
+//	uint8_t key = 0;
+//
+//	putStrDirectly(middle, arrayModes[*mode], sizeof(arrayModes[*mode]));
+//
+//	// choose page with setting or move to next
+//	while (key != FNK && key != Input) {
+//		key = receiveKey();
+//		res = key;
+//	}
+//
+//
+//	while (!done && key != FNK) {
+//		// show the current result
+//		putStrDirectly(middle, arrayModes[*mode], sizeof(arrayModes[*mode]));
+//
+//		key = receiveKey();
+//
+//		switch (key) {
+//		case encoderLeft: {
+//
+//		} break;
+//
+//		case encoderRight: {
+//
+//		} break;
+//
+//		case FNK:
+//		{
+//			done = true;
+//			res = FNK;
+//		} break;
+//
+//		case Input:
+//		{
+//			done = true;
+//			res = Input;
+//		} break;
+//
+//		default:
+//			break;
+//		}
+//	}
+//
+//	return res;
+//}
