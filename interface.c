@@ -4,11 +4,11 @@
 extern const char baseAndLetters[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 
 // Sensor air/surface
-extern const char * sensorModesArray[] = {"Yes", "Manual mode", "No"};
+extern const char* sensorModesArray[] = { "Yes", "Manual mode", "No" };
 extern const uint8_t sizeSensorArray = 3;
 
 // SIL
-extern const char* SIL_Array[] = { "low", "medium", "high" };
+extern const char* SIL_Array[] = { "Low", "Medium", "High" };
 extern const uint8_t sizeSIL_Array = 3;
 
 void init(struct Configuration* con) {
@@ -128,7 +128,7 @@ void inputACCategory(struct ACCategory* ACCat) {
 	putStrDirectly(0, "Category A/C", sizeof("Category A/C") + 1);
 	putStrDirectly(2, titleCurACCat, sizeof(titleCurACCat) + 1);
 	putStrDirectly(4, "Configuration", sizeof("Configuration") + 1);
-	
+
 	uint8_t key = 0;
 	// receive key in order to get to menu or go to next 
 	while (key != FNK && key != Input) {
@@ -139,7 +139,7 @@ void inputACCategory(struct ACCategory* ACCat) {
 	if (key == Input) {
 		system("cls");
 
-		
+
 
 
 	}
@@ -167,14 +167,14 @@ void inputSize(uint16_t* length, uint16_t* width) {
 	codeToWord(*length, tempLength, sizeof(tempLength), base);
 	codeToWord(*width, tempWidth, sizeof(tempWidth), base);
 
-	
+
 	// title with current size
 	char titleCurSize[
 		sizeof(tempLength) +
-		sizeof(tempLength) +
-		sizeof("L W")
-		- 2
-	]; 
+			sizeof(tempLength) +
+			sizeof("L W")
+			- 2
+	];
 	strcpy_s(titleCurSize, sizeof(titleCurSize), "L");
 	strcat_s(titleCurSize, sizeof(titleCurSize), tempLength);
 	strcat_s(titleCurSize, sizeof(titleCurSize), " W");
@@ -218,14 +218,14 @@ void mainMenu() {
 
 	while (mode == Off) {
 		mode = receiveKey();
-		switch (mode)
-		{
+		switch (mode) {
 		case On: break;
 		case SBY: break;
 		case GND: break;
 		case Alt: break;
 
-		default: {
+		default:
+		{
 			mode = Off;
 		} break;
 		}
@@ -258,6 +258,40 @@ void putStrDirectly(uint8_t y, char str[], uint8_t strSize) {
 	LPCSTR tempStr = str;
 
 	WriteConsoleOutputCharacterA(hStdOut, tempStr, strSize - 1, here, &dw);
+}
+
+void putStrMode(uint8_t y, char str[], uint8_t strSize) {
+	DWORD dw, write;
+	COORD here;
+	here.X = 0;
+	here.Y = y;
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hStdOut == INVALID_HANDLE_VALUE) {
+		printf("Invalid handle");
+	}
+
+	LPCSTR tempStr = str;
+
+	FillConsoleOutputAttribute(hStdOut, 240, strSize - 1, here, &write);
+	WriteConsoleOutputCharacterA(hStdOut, str, strSize - 1, here, &dw);
+}
+
+void cleanScreen() {
+	system("cls");
+}
+
+void cleanRow(uint8_t y) {
+	DWORD dw, write;
+	COORD here;
+	here.X = 0;
+	here.Y = y;
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hStdOut == INVALID_HANDLE_VALUE) {
+		printf("Invalid handle");
+	}
+
+	FillConsoleOutputAttribute(hStdOut, 7, strlen("           "), here, &write);
+	WriteConsoleOutputCharacterA(hStdOut, "           ", strlen("           "), here, &dw); // just put empty string to overlap another string
 }
 
 uint8_t receiveKey() {
@@ -297,7 +331,8 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 				iterator++;
 		} break;
 
-		case encoderLeft: {
+		case encoderLeft:
+		{
 			if (data[iterator] == baseAndLetters[0])          // case, when we need to change to the highest digit of base (7, 9, F, space)
 				data[iterator] = baseAndLetters[base - 1];
 			else if (data[iterator] == 'A')                   // case, when digit equal A and it's necessary to change to 9
@@ -308,7 +343,8 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 				data[iterator]--;                             // rest cases
 		} break;
 
-		case encoderRight: {
+		case encoderRight:
+		{
 			if (data[iterator] == baseAndLetters[base - 1])   // case, when we need to change to 0
 				data[iterator] = baseAndLetters[0];
 			else if (data[iterator] == '9')                   // case, when digit equal 9 and it's necessary to change to A
@@ -378,54 +414,64 @@ uint32_t wordToCode(char word[], const uint8_t wordLength, const uint8_t base) {
 	return res;
 }
 
-//uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize) {
-//	uint8_t res;              // last inputed key
-//
-//	bool done = false;        // loop value
-//	uint8_t iterator = 0;     // index of digit (left to rigth)
-//
-//	uint8_t key = 0;
-//
-//	putStrDirectly(middle, arrayModes[*mode], sizeof(arrayModes[*mode]));
-//
-//	// choose page with setting or move to next
-//	while (key != FNK && key != Input) {
-//		key = receiveKey();
-//		res = key;
-//	}
-//
-//
-//	while (!done && key != FNK) {
-//		// show the current result
-//		putStrDirectly(middle, arrayModes[*mode], sizeof(arrayModes[*mode]));
-//
-//		key = receiveKey();
-//
-//		switch (key) {
-//		case encoderLeft: {
-//
-//		} break;
-//
-//		case encoderRight: {
-//
-//		} break;
-//
-//		case FNK:
-//		{
-//			done = true;
-//			res = FNK;
-//		} break;
-//
-//		case Input:
-//		{
-//			done = true;
-//			res = Input;
-//		} break;
-//
-//		default:
-//			break;
-//		}
-//	}
-//
-//	return res;
-//}
+uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize) {
+	uint8_t res;              // last inputed key
+
+	bool done = false;        // loop value
+
+	uint8_t key = 0;
+
+	putStrDirectly(middle, arrayModes[*mode], strlen(arrayModes[*mode]) + 1);
+
+	// choose page with setting or move to next
+	while (key != FNK && key != Input) {
+		key = receiveKey();
+		res = key;
+	}
+
+
+	while (!done && key != FNK) {
+		// show the current result
+		putStrMode(middle, arrayModes[*mode], strlen(arrayModes[*mode]) + 1);
+
+		key = receiveKey();
+
+		switch (key) {
+		case encoderLeft:
+		{
+			if (*mode <= 0)             // case when we need came to beginning and we need to loop choice of mode
+				*mode = arraySize - 1;
+			else {                      // the rest cases
+				(*mode)--;
+			}
+		} break;
+
+		case encoderRight:
+		{
+			if (*mode >= arraySize - 1) // case when we need came to end and we need to loop choice of mode
+				*mode = 0;
+			else {
+				(*mode)++;              // the rest cases
+			}
+		} break;
+
+		case FNK:
+		{
+			done = true;
+			res = FNK;
+		} break;
+
+		case Input:
+		{
+			done = true;
+			res = Input;
+		} break;
+
+		default:
+			break;
+		}
+		cleanRow(middle);
+	}
+
+	return res;
+}

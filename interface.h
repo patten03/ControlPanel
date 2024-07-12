@@ -36,7 +36,7 @@ enum displayRow {
 
 
 // Sensor air-surface
-extern const char *sensorModesArray[];
+extern const char* sensorModesArray[];
 extern const uint8_t sizeSensorArray;
 enum sensorAS_Mode { // A/S - air-surface
 	sensorOn = 0,
@@ -45,7 +45,7 @@ enum sensorAS_Mode { // A/S - air-surface
 };
 
 
-//  SIL - Safety Integrity Level
+// SIL - Safety Integrity Level
 extern const char* SIL_Array[];
 extern const uint8_t sizeSIL_Array;
 enum SIL_Level {
@@ -94,7 +94,15 @@ void inputSize(uint16_t* length, uint16_t* width);
 
 void mainMenu();
 
+
+// display work
 void putStrDirectly(uint8_t y, char str[], uint8_t strSize);
+void putStrValue(uint8_t y, char str[], uint8_t strSize, uint8_t chosenSymbol);
+void putStrMode(uint8_t y, char str[], uint8_t strSize);
+void cleanScreen();
+void cleanRow(uint8_t y);
+
+
 uint8_t receiveKey();
 uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base);
 uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize);
