@@ -1,19 +1,20 @@
 #include "interface.h"
 
-// for work with 
-extern const char base16[] = "0123456789ABCDEF";
+/* To input octal, demical and hexademical bases and letters*/
+extern const char baseAndLetters[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 
 void init(struct Configuration* con) {
 	con->ICAO = 0;
 	con->codeA = 0;
 	con->codeVFR = 0;
 
-	memset(con->flightNumber, 0, sizeof(con->flightNumber));
+	memset(con->flightNumber, ' ', sizeof(con->flightNumber));
+	con->flightNumber[sizeof(con->flightNumber) - 1] = '\0';
+
 	con->velocityCategory = 0;
 
-	con->ACCat.setA = 0;
-	con->ACCat.setB = 0;
-	con->ACCat.setC = 0;
+	con->ACCat.set = 'A';
+	con->ACCat.category = 0;
 
 	// sensor surface/air
 	// SIL
@@ -38,6 +39,7 @@ void inputICAO(uint32_t* ICAO) {
 		*ICAO = wordToCode(address, sizeof(address), base);
 	}
 
+	// erase display data (Andrew)
 	system("cls");
 }
 
@@ -76,32 +78,89 @@ void inputCodeVFR(uint16_t* codeVFR) {
 	if (save == Input) {
 		*codeVFR = wordToCode(code, sizeof(code), base);
 	}
+
+	// erase display data (Andrew)
+	system("cls");
+}
+
+void inputFlightNumber(char flightNumber[], uint8_t numLength) {
+	char tempFlightNumber[9]; // flight number 
+	uint8_t base = 37;        // include all digits, letter and space
+
+	strcpy_s(tempFlightNumber, sizeof(tempFlightNumber), flightNumber);
+
+	// input some title onto display (Andrew)
+	putStrDirectly(top, "Flight number", sizeof("Flight number") + 1);
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration") + 1);
+
+	uint8_t save = controlPanel(tempFlightNumber, sizeof(tempFlightNumber), base);
+
+	if (save == Input) {
+		strcpy_s(flightNumber, numLength, tempFlightNumber);
+	}
+
+	// erase display data (Andrew)
+	system("cls");
+}
+
+void inputACCategory(struct ACCategory* ACCat) {
+	char tempSet;        // set of categories for A/C
+	uint8_t category;    // category of A/C
+	uint8_t base = 8;    // octal base
+
+	char titleCurACCat[
+		sizeof("Cat. _ *")
+	];
+	strcpy_s(titleCurACCat, sizeof(titleCurACCat), "Cat. ");
+	strcat_s(titleCurACCat, sizeof(titleCurACCat), ACCat->set);
+	strcat_s(titleCurACCat, sizeof(titleCurACCat), ' ');
+	strcat_s(titleCurACCat, sizeof(titleCurACCat), (char)('0' + ACCat->category));
+
+	// input some title onto display (Andrew)
+	putStrDirectly(0, "Category A/C", sizeof("Category A/C") + 1);
+	putStrDirectly(2, titleCurACCat, sizeof(titleCurACCat) + 1);
+	putStrDirectly(4, "Configuration", sizeof("Configuration") + 1);
+	
+	uint8_t key = 0;
+	// receive key in order to get to menu or go to next 
+	while (key != FNK && key != Input) {
+		key = receiveKey();
+	}
+
+	// if user chose Input, change parametrs
+	if (key == Input) {
+		system("cls");
+
+		
+
+
+	}
 }
 
 void inputSize(uint16_t* length, uint16_t* width) {
 	char tempLength[4]; // array of digits for A/C length
 	char tempWidth[4];  // array of digits for A/C width
-	uint8_t base = 10;     // demical base
+	uint8_t base = 10;  // demical base
 
 	codeToWord(*length, tempLength, sizeof(tempLength), base);
 	codeToWord(*width, tempWidth, sizeof(tempWidth), base);
 
 	
 	// title with current size
-	char initialSize[
+	char titleCurSize[
 		sizeof(tempLength) +
 		sizeof(tempLength) +
 		sizeof("L W")
 		- 2
 	]; 
-	strcpy_s(initialSize, sizeof(initialSize), "L");
-	strcat_s(initialSize, sizeof(initialSize), tempLength);
-	strcat_s(initialSize, sizeof(initialSize), " W");
-	strcat_s(initialSize, sizeof(initialSize), tempWidth);
+	strcpy_s(titleCurSize, sizeof(titleCurSize), "L");
+	strcat_s(titleCurSize, sizeof(titleCurSize), tempLength);
+	strcat_s(titleCurSize, sizeof(titleCurSize), " W");
+	strcat_s(titleCurSize, sizeof(titleCurSize), tempWidth);
 
 	// input some title onto display (Andrew)
 	putStrDirectly(0, "Size, m", sizeof("Size, m") + 1);
-	putStrDirectly(2, initialSize, sizeof(initialSize) + 1);
+	putStrDirectly(2, titleCurSize, sizeof(titleCurSize) + 1);
 	putStrDirectly(4, "Configuration", sizeof("Configuration") + 1);
 
 
@@ -154,7 +213,7 @@ void mainMenu() {
 		inputICAO(&con.ICAO);
 		inputCodeA(&con.codeA);
 		inputCodeVFR(&con.codeVFR);
-		// con.inputFlightNumber();
+		inputFlightNumber(&con.flightNumber, sizeof(&con.flightNumber) + 1); // I don't know why, but sizeof gives 8 instead of 9
 		// con.inputVelocityCategory();
 		// con.inputACCategory();
 		// sensor surface/air
@@ -210,28 +269,32 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 		switch (key) {
 		case encoderEnter:
 		{
-			if (iterator >= dataLength - 2) // looping input of number
+			if (iterator >= dataLength - 2) // looping input of number and letters
 				iterator = 0;
 			else
 				iterator++;
 		} break;
 
 		case encoderLeft: {
-			if (data[iterator] == base16[0])          // case, when we need to change to the highest number of base (7, 9, F)
-				data[iterator] = base16[base - 1];
-			else if (data[iterator] == base16[10])    // case, when number equal A and it's necessary to change to 9
-				data[iterator] = base16[9];
+			if (data[iterator] == baseAndLetters[0])          // case, when we need to change to the highest digit of base (7, 9, F, space)
+				data[iterator] = baseAndLetters[base - 1];
+			else if (data[iterator] == 'A')                   // case, when digit equal A and it's necessary to change to 9
+				data[iterator] = '9';
+			else if (data[iterator] == ' ')                   // case, when symbol equal space and it's necessary to change to Z
+				data[iterator] = 'Z';
 			else
-				data[iterator]--;                     // rest cases
+				data[iterator]--;                             // rest cases
 		} break;
 
 		case encoderRight: {
-			if (data[iterator] == base16[base - 1])   // case, when we need to change to 0
-				data[iterator] = base16[0];
-			else if (data[iterator] == base16[9])     // case, when number equal 9 and it's necessary to change to A
-				data[iterator] = base16[10];
+			if (data[iterator] == baseAndLetters[base - 1])   // case, when we need to change to 0
+				data[iterator] = baseAndLetters[0];
+			else if (data[iterator] == '9')                   // case, when digit equal 9 and it's necessary to change to A
+				data[iterator] = 'A';
+			else if (data[iterator] == 'Z')                   // case, when letter equal Z and it's necessary to change to space
+				data[iterator] = ' ';
 			else
-				data[iterator]++;                     // rest cases
+				data[iterator]++;                             // rest cases
 		} break;
 
 		case FNK:
@@ -266,7 +329,7 @@ void codeToWord(uint32_t code, char word[], const uint8_t wordLength, const uint
 	uint8_t i = wordLength - 2;
 
 	while (code > 0) {
-		word[i] = base16[code % base];
+		word[i] = baseAndLetters[code % base];
 
 		code /= base;
 		i--;

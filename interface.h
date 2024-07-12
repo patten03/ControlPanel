@@ -9,7 +9,7 @@
 
 #include <Windows.h>
 
-extern const char base16[];
+extern const char baseAndLetters[];
 
 // TODO after import to keil you have to change keys values
 enum keys {
@@ -28,10 +28,15 @@ enum keys {
 	encoderLeft = 'd', encoderRight = 'f', encoderEnter = ' ' // encoder
 };
 
+enum displayRow {
+	top = 0,
+	middle = 2,
+	bottom = 4
+};
+
 struct ACCategory { // A/C - aircraft
-	uint8_t setA;
-	uint8_t setB;
-	uint8_t setC;
+	char set;
+	uint8_t category;
 };
 
 struct Configuration {
@@ -57,7 +62,7 @@ void loadFromUART(struct Configuration* con);
 void inputICAO(uint32_t* ICAO);
 void inputCodeA(uint16_t* codeA);
 void inputCodeVFR(uint16_t* codeVFR);
-// void inputFlightNumber();
+void inputFlightNumber(char flightNumber[], uint8_t numLength);
 // void inputVelocityCategory();
 // void inputACCategory(struct ACCategory* ACCat);
 // sensor surface/air
