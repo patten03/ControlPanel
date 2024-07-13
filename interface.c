@@ -37,9 +37,9 @@ void inputICAO(uint32_t* ICAO) {
 
 	codeToWord(*ICAO, address, sizeof(address), base);
 
-	// input some title onto display (Andrew)
-	putStrDirectly(0, "ICAO address", 13);
-	putStrDirectly(4, "Configuration", 14);
+	// input some title onto display
+	putStrDirectly(top, "ICAO address", sizeof("ICAO address"));
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
 	uint8_t save = controlPanel(address, sizeof(address), base);
 
@@ -56,9 +56,9 @@ void inputCodeA(uint16_t* codeA) {
 
 	codeToWord(*codeA, code, sizeof(code), base);
 
-	// input some title onto display (Andrew)
-	putStrDirectly(0, "Code A", 7);
-	putStrDirectly(4, "Configuration", 14);
+	// input some title onto display
+	putStrDirectly(top, "Code A", sizeof("Code A"));
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
 	uint8_t save = controlPanel(code, sizeof(code), base);
 
@@ -75,9 +75,9 @@ void inputCodeVFR(uint16_t* codeVFR) {
 
 	codeToWord(*codeVFR, code, sizeof(code), base);
 
-	// input some title onto display (Andrew)
-	putStrDirectly(0, "Code VFP", 9);
-	putStrDirectly(4, "Configuration", 14);
+	// input some title onto display
+	putStrDirectly(top, "Code VFP", sizeof("Code VFP"));
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
 	uint8_t save = controlPanel(code, sizeof(code), base);
 
@@ -120,10 +120,10 @@ void inputACCategory(struct ACCategory* ACCat) {
 	strcat_s(titleCurACCat, sizeof(titleCurACCat), ' ');
 	strcat_s(titleCurACCat, sizeof(titleCurACCat), (char)('0' + ACCat->category));
 
-	// input some title onto display (Andrew)
-	putStrDirectly(0, "Category A/C", sizeof("Category A/C") + 1);
-	putStrDirectly(2, titleCurACCat, sizeof(titleCurACCat) + 1);
-	putStrDirectly(4, "Configuration", sizeof("Configuration") + 1);
+	// input some title onto display
+	putStrDirectly(top, "Category A/C", sizeof("Category A/C") + 1);
+	putStrDirectly(middle, titleCurACCat, sizeof(titleCurACCat) + 1);
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration") + 1);
 
 	uint8_t key = 0;
 	// receive key in order to get to menu or go to next 
@@ -144,7 +144,7 @@ void inputACCategory(struct ACCategory* ACCat) {
 void inputSensorAS(uint8_t* sensorMode) {
 	uint8_t tempSensorMode = *sensorMode;  // Mode of air-surface sensor
 
-	// input some title onto display (Andrew)
+	// input some title onto display
 	putStrDirectly(top, "Sensor A-S", sizeof("Sensor A-S"));
 	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
@@ -177,10 +177,10 @@ void inputSize(uint16_t* length, uint16_t* width) {
 	strcat_s(titleCurSize, sizeof(titleCurSize), " W");
 	strcat_s(titleCurSize, sizeof(titleCurSize), tempWidth);
 
-	// input some title onto display (Andrew)
-	putStrDirectly(0, "Size, m", sizeof("Size, m") + 1);
-	putStrDirectly(2, titleCurSize, sizeof(titleCurSize) + 1);
-	putStrDirectly(4, "Configuration", sizeof("Configuration") + 1);
+	// input some title onto display
+	putStrDirectly(top, "Size, m", sizeof("Size, m") + 1);
+	putStrDirectly(middle, titleCurSize, sizeof(titleCurSize) + 1);
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration") + 1);
 
 
 	uint8_t key = 0;
@@ -193,10 +193,10 @@ void inputSize(uint16_t* length, uint16_t* width) {
 	if (key == Input) {
 		cleanScreen();
 
-		putStrDirectly(0, "Length, m", sizeof("Length, m") + 1);
-		putStrDirectly(4, "Configuration", sizeof("Configuration") + 1);
+		putStrDirectly(top, "Length, m", sizeof("Length, m") + 1);
+		putStrDirectly(bottom, "Configuration", sizeof("Configuration") + 1);
 		uint8_t save1 = controlPanel(tempLength, sizeof(tempLength), base);
-		putStrDirectly(0, "Width, m", sizeof("Width, m") + 1);
+		putStrDirectly(top, "Width, m", sizeof("Width, m") + 1);
 		uint8_t save2 = controlPanel(tempWidth, sizeof(tempWidth), base);
 
 		if (save1 == Input)
@@ -304,7 +304,7 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 
 	uint8_t key = 0;
 
-	putStrDirectly(2, data, dataLength);
+	putStrDirectly(middle, data, dataLength);
 
 	// choose page with setting or move to next
 	while (key != FNK && key != Input) {
@@ -315,7 +315,7 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 
 	while (!done && key != FNK) {
 		// show the current result
-		putStrDirectly(2, data, dataLength);
+		putStrDirectly(middle, data, dataLength);
 
 		key = receiveKey();
 
