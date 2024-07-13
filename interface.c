@@ -47,8 +47,7 @@ void inputICAO(uint32_t* ICAO) {
 		*ICAO = wordToCode(address, sizeof(address), base);
 	}
 
-	// erase display data (Andrew)
-	system("cls");
+	cleanScreen();
 }
 
 void inputCodeA(uint16_t* codeA) {
@@ -67,8 +66,7 @@ void inputCodeA(uint16_t* codeA) {
 		*codeA = wordToCode(code, sizeof(code), base);
 	}
 
-	// erase display data (Andrew)
-	system("cls");
+	cleanScreen();
 }
 
 void inputCodeVFR(uint16_t* codeVFR) {
@@ -87,8 +85,7 @@ void inputCodeVFR(uint16_t* codeVFR) {
 		*codeVFR = wordToCode(code, sizeof(code), base);
 	}
 
-	// erase display data (Andrew)
-	system("cls");
+	cleanScreen();
 }
 
 void inputFlightNumber(char flightNumber[], uint8_t numLength) {
@@ -107,8 +104,7 @@ void inputFlightNumber(char flightNumber[], uint8_t numLength) {
 		strcpy_s(flightNumber, numLength, tempFlightNumber);
 	}
 
-	// erase display data (Andrew)
-	system("cls");
+	cleanScreen();
 }
 
 void inputACCategory(struct ACCategory* ACCat) {
@@ -137,7 +133,7 @@ void inputACCategory(struct ACCategory* ACCat) {
 
 	// if user chose Input, change parametrs
 	if (key == Input) {
-		system("cls");
+		cleanScreen();
 
 
 
@@ -195,7 +191,7 @@ void inputSize(uint16_t* length, uint16_t* width) {
 
 	// if user chose Input, change parametrs
 	if (key == Input) {
-		system("cls");
+		cleanScreen();
 
 		putStrDirectly(0, "Length, m", sizeof("Length, m") + 1);
 		putStrDirectly(4, "Configuration", sizeof("Configuration") + 1);
@@ -209,7 +205,7 @@ void inputSize(uint16_t* length, uint16_t* width) {
 			*width = wordToCode(tempWidth, sizeof(tempWidth), base);
 	}
 
-	system("cls");
+	cleanScreen();
 }
 
 void mainMenu() {
