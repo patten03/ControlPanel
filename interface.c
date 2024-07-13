@@ -24,7 +24,7 @@ void init(struct Configuration* con) {
 	con->ACCat.set = 'A';
 	con->ACCat.category = 0;
 
-	// sensor surface/air
+	con->sensorAS = sensorOff;
 	// SIL
 
 	con->length = 0;
@@ -145,19 +145,20 @@ void inputACCategory(struct ACCategory* ACCat) {
 	}
 }
 
-//void inputSensorAS(uint8_t* sensorMode) {
-//	uint8_t tempSensorMode;  // Mode of air-surface sensor
-//
-//	// input some title onto display (Andrew)
-//	putStrDirectly(top, "Sensor A-S", sizeof("Sensor A-S"));
-//	putStrDirectly(middle, "Configuration", sizeof("Configuration"));
-//
-//	uint8_t save = chooseRegime(tempSensorMode, sensorModesArray, sizeSensorArray);
-//
-//	if (save == Input) {
-//		*sensorMode = tempSensorMode;
-//	}
-//}
+void inputSensorAS(uint8_t* sensorMode) {
+	uint8_t tempSensorMode = *sensorMode;  // Mode of air-surface sensor
+
+	// input some title onto display (Andrew)
+	putStrDirectly(top, "Sensor A-S", sizeof("Sensor A-S"));
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
+
+	uint8_t save = chooseMode(&tempSensorMode, sensorModesArray, sizeSensorArray);
+
+	if (save == Input) {
+		*sensorMode = tempSensorMode;
+	}
+	cleanScreen();
+}
 
 void inputSize(uint16_t* length, uint16_t* width) {
 	char tempLength[4]; // array of digits for A/C length
@@ -238,7 +239,7 @@ void mainMenu() {
 		inputFlightNumber(&con.flightNumber, sizeof(&con.flightNumber) + 1); // I don't know why, but sizeof gives 8 instead of 9
 		// con.inputVelocityCategory();
 		// con.inputACCategory();
-		// sensor surface/air
+		inputSensorAS(&con.sensorAS);
 		// sil
 		inputSize(&con.length, &con.width);
 	}
@@ -470,7 +471,7 @@ uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize) {
 		default:
 			break;
 		}
-		cleanRow(middle);
+		cleanRow(middle);               // clean row after selecting another mode
 	}
 
 	return res;
