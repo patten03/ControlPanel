@@ -43,6 +43,7 @@ void inputICAO(uint32_t* ICAO) {
 
 	// input some title onto display
 	putStrDirectly(top, "ICAO address", sizeof("ICAO address"));
+	putStrValue(middle, address, sizeof(address), -1);
 	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
 	uint8_t save = controlPanel(address, sizeof(address), base);
@@ -62,6 +63,7 @@ void inputCodeA(uint16_t* codeA) {
 
 	// input some title onto display
 	putStrDirectly(top, "Code A", sizeof("Code A"));
+	putStrValue(middle, code, sizeof(code), -1);
 	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
 	uint8_t save = controlPanel(code, sizeof(code), base);
@@ -81,6 +83,7 @@ void inputCodeVFR(uint16_t* codeVFR) {
 
 	// input some title onto display
 	putStrDirectly(top, "Code VFP", sizeof("Code VFP"));
+	putStrValue(middle, code, sizeof(code), -1);
 	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
 	uint8_t save = controlPanel(code, sizeof(code), base);
@@ -99,8 +102,9 @@ void inputFlightNumber(char flightNumber[], uint8_t numLength) {
 	strcpy_s(tempFlightNumber, sizeof(tempFlightNumber), flightNumber);
 
 	// input some title onto display (Andrew)
-	putStrDirectly(top, "Flight number", sizeof("Flight number") + 1);
-	putStrDirectly(bottom, "Configuration", sizeof("Configuration") + 1);
+	putStrDirectly(top, "Flight number", sizeof("Flight number"));
+	putStrValue(middle, tempFlightNumber, sizeof(tempFlightNumber), -1);
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
 	uint8_t save = controlPanel(tempFlightNumber, sizeof(tempFlightNumber), base);
 
@@ -136,6 +140,7 @@ void inputACCategory(struct ACCategory* ACCat) {
 		ACCat->set = tempSetIndex;
 
 	}
+	cleanScreen();
 }
 
 void inputSensorAS(uint8_t* sensorMode) {
@@ -143,11 +148,13 @@ void inputSensorAS(uint8_t* sensorMode) {
 
 	// input some title onto display
 	putStrDirectly(top, "Sensor A-S", sizeof("Sensor A-S"));
+	putStrDirectly(middle, sensorModesArray[tempSensorMode], strlen(sensorModesArray[tempSensorMode]) + 1);
 	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
-	uint8_t save = chooseMode(&tempSensorMode, sensorModesArray, sizeSensorArray);
 
-	if (save == Input) {
+	uint8_t lastKey = chooseMode(&tempSensorMode, sensorModesArray, sizeSensorArray);
+
+	if (lastKey == Input) {
 		*sensorMode = tempSensorMode;
 	}
 	cleanScreen();
@@ -157,13 +164,13 @@ void inputSIL(uint8_t* SIL_value) {
 	uint8_t tempSIL_value = *SIL_value; // - Security Integrity Level
 
 	// input some title onto display
-
 	putStrDirectly(top, "SIL", sizeof("SIL"));
+	putStrDirectly(middle, SIL_Array[tempSIL_value], strlen(SIL_Array[tempSIL_value]) + 1);
 	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
-	uint8_t save = chooseMode(&tempSIL_value, SIL_Array, sizeSIL_Array);
+	uint8_t lastKey = chooseMode(&tempSIL_value, SIL_Array, sizeSIL_Array);
 
-	if (save == Input) {
+	if (lastKey == Input) {
 		*SIL_value = tempSIL_value;
 	}
 	cleanScreen();
@@ -207,9 +214,12 @@ void inputSize(uint16_t* length, uint16_t* width) {
 		cleanScreen();
 
 		putStrDirectly(top, "Length, m", sizeof("Length, m") + 1);
+		putStrValue(middle, tempLength, sizeof(tempWidth), -1);
 		putStrDirectly(bottom, "Configuration", sizeof("Configuration") + 1);
 		uint8_t save1 = controlPanel(tempLength, sizeof(tempLength), base);
+
 		putStrDirectly(top, "Width, m", sizeof("Width, m") + 1);
+		putStrValue(middle, tempWidth, sizeof(tempWidth), -1);
 		uint8_t save2 = controlPanel(tempWidth, sizeof(tempWidth), base);
 
 		if (save1 == Input)
@@ -254,7 +264,6 @@ void mainMenu() {
 	}
 }
 
-// it's only for console, on stm32 you need to replace it
 void putStrDirectly(uint8_t y, char str[], uint8_t strSize) {
 	DWORD dw;
 	COORD here;
@@ -266,6 +275,26 @@ void putStrDirectly(uint8_t y, char str[], uint8_t strSize) {
 	}
 
 	LPCSTR tempStr = str;
+
+	WriteConsoleOutputCharacterA(hStdOut, tempStr, strSize - 1, here, &dw);
+}
+
+
+//@param[in] chosenSymbol - index of selected symbol that necessay to highlight, if chosenSymbol is equal -1, none of them highlight
+void putStrValue(uint8_t y, char str[], uint8_t strSize, int8_t chosenSymbol) {
+	DWORD dw, write;
+	COORD here;
+	here.X = 0;
+	here.Y = y;
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hStdOut == INVALID_HANDLE_VALUE) {
+		printf("Invalid handle");
+	}
+
+	LPCSTR tempStr = str;
+
+	if (chosenSymbol >= -1)
+		FillConsoleOutputAttribute(hStdOut, 0b11110000, 1, (COORD) { here.X + chosenSymbol, here.Y }, & write);
 
 	WriteConsoleOutputCharacterA(hStdOut, tempStr, strSize - 1, here, &dw);
 }
@@ -282,7 +311,7 @@ void putStrMode(uint8_t y, char str[], uint8_t strSize) {
 
 	LPCSTR tempStr = str;
 
-	FillConsoleOutputAttribute(hStdOut, 240, strSize - 1, here, &write);
+	FillConsoleOutputAttribute(hStdOut, 0b11110000, strSize - 1, here, &write);
 	WriteConsoleOutputCharacterA(hStdOut, str, strSize - 1, here, &dw);
 }
 
@@ -300,8 +329,8 @@ void cleanRow(uint8_t y) {
 		printf("Invalid handle");
 	}
 
-	FillConsoleOutputAttribute(hStdOut, 7, strlen("           "), here, &write);
-	WriteConsoleOutputCharacterA(hStdOut, "           ", strlen("           "), here, &dw); // just put empty string to overlap another string
+	FillConsoleOutputAttribute(hStdOut, 0b00000111, strlen("                 "), here, &write);
+	WriteConsoleOutputCharacterA(hStdOut, "                 ", strlen("                 "), here, &dw); // just put empty string to overlap another string
 }
 
 uint8_t receiveKey() {
@@ -317,7 +346,7 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 
 	uint8_t key = 0;
 
-	putStrDirectly(middle, data, dataLength);
+	// putStrDirectly(middle, data, dataLength);
 
 	// choose page with setting or move to next
 	while (key != FNK && key != Input) {
@@ -328,7 +357,7 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 
 	while (!done && key != FNK) {
 		// show the current result
-		putStrDirectly(middle, data, dataLength);
+		putStrValue(middle, data, dataLength, iterator);
 
 		key = receiveKey();
 
@@ -387,6 +416,7 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 		default:
 			break;
 		}
+		cleanRow(middle);
 	}
 
 	return res;
@@ -431,14 +461,12 @@ uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize) {
 
 	uint8_t key = 0;
 
-	putStrDirectly(middle, arrayModes[*mode], strlen(arrayModes[*mode]) + 1);
-
 	// choose page with setting or move to next
 	while (key != FNK && key != Input) {
 		key = receiveKey();
 		res = key;
 	}
-
+	cleanRow(middle);
 
 	while (!done && key != FNK) {
 		// show the current result
