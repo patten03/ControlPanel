@@ -97,6 +97,7 @@ void inputACCategory(struct ACCategory* ACCat);
 void inputSensorAS(uint8_t* sensorMode);
 void inputSIL(uint8_t* SIL_value);
 void inputSize(uint16_t* length, uint16_t* width);
+uint8_t quitConfiguration();
 
 // main loop of program
 void mainMenu();

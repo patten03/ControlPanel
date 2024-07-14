@@ -209,7 +209,7 @@ void inputSize(uint16_t* length, uint16_t* width) {
 		key = receiveKey();
 	}
 
-	// if user chose Input, change parametrs
+	// if user chose Input, change parameters
 	if (key == Input) {
 		cleanScreen();
 
@@ -231,36 +231,36 @@ void inputSize(uint16_t* length, uint16_t* width) {
 	cleanScreen();
 }
 
+uint8_t quitConfiguration() {
+	putStrDirectly(top, "Quit", sizeof("Quit"));
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
+
+	// waiting for Input or FNK key
+	uint8_t res = 0;
+	while (res != Input && res != FNK)
+		res = receiveKey();
+
+	cleanScreen();
+	return res;
+}
+
 void mainMenu() {
-	uint8_t mode = Off;
 	struct Configuration con;
 	init(&con);
 
-	while (mode == Off) {
-		mode = receiveKey();
-		switch (mode) {
-		case On: break;
-		case SBY: break;
-		case GND: break;
-		case Alt: break;
-
-		default:
-		{
-			mode = Off;
-		} break;
-		}
-	}
-
-	while (mode != Off) {
+	uint8_t lastKey = 0;
+	while (lastKey != Input) {
 		inputICAO(&con.ICAO);
 		inputCodeA(&con.codeA);
 		inputCodeVFR(&con.codeVFR);
 		inputFlightNumber(&con.flightNumber, sizeof(&con.flightNumber) + 1); // I don't know why, but sizeof() gives 8 instead of 9
-		// con.inputVelocityCategory();
+		//inputVelocityCategory();
 		inputACCategory(&con.ACCat);
 		inputSensorAS(&con.sensorAS);
 		inputSIL(&con.SIL);
 		inputSize(&con.length, &con.width);
+
+		lastKey = quitConfiguration();
 	}
 }
 
