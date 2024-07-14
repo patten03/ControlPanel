@@ -11,6 +11,10 @@ extern const uint8_t sizeSensorArray = 3;
 extern const char* SIL_Array[] = { "Low", "Medium", "High" };
 extern const uint8_t sizeSIL_Array = 3;
 
+// ACCategory
+extern const char* ACCategoryArray[] = { "A", "B", "C" };
+extern const uint8_t ACCategoryArraySize = 3;
+
 void init(struct Configuration* con) {
 	con->ICAO = 0;
 	con->codeA = 0;
@@ -21,11 +25,11 @@ void init(struct Configuration* con) {
 
 	con->velocityCategory = 0;
 
-	con->ACCat.set = 'A';
+	con->ACCat.set = A;
 	con->ACCat.category = 0;
 
 	con->sensorAS = sensorOff;
-	// SIL
+	con->SIL = low;
 
 	con->length = 0;
 	con->width = 0;
@@ -108,35 +112,28 @@ void inputFlightNumber(char flightNumber[], uint8_t numLength) {
 }
 
 void inputACCategory(struct ACCategory* ACCat) {
-	char tempSet;        // set of categories for A/C
-	uint8_t category;    // category of A/C
-	uint8_t base = 8;    // octal base
+	uint8_t tempSetIndex = ACCat->set;                     // set of categories for A/C
+	char tempCategory[] = { ACCat->category + '0', '\0' }; // category of A/C
+	uint8_t base = 8;                                      // octal base
 
-	char titleCurACCat[
-		sizeof("Cat. _ *")
-	];
-	strcpy_s(titleCurACCat, sizeof(titleCurACCat), "Cat. ");
-	strcat_s(titleCurACCat, sizeof(titleCurACCat), ACCat->set);
-	strcat_s(titleCurACCat, sizeof(titleCurACCat), ' ');
-	strcat_s(titleCurACCat, sizeof(titleCurACCat), (char)('0' + ACCat->category));
+	char middleTitle[sizeof("Set _ Cat. *")];
+	strcpy_s(middleTitle, sizeof(middleTitle), "Set ");
+	strcat_s(middleTitle, sizeof(middleTitle), ACCategoryArray[ACCat->set]);
+	strcat_s(middleTitle, sizeof(middleTitle), " Cat. ");
+	strcat_s(middleTitle, sizeof(middleTitle), tempCategory);
 
 	// input some title onto display
 	putStrDirectly(top, "Category A/C", sizeof("Category A/C") + 1);
-	putStrDirectly(middle, titleCurACCat, sizeof(titleCurACCat) + 1);
+	putStrDirectly(middle, middleTitle, sizeof(middleTitle));
 	putStrDirectly(bottom, "Configuration", sizeof("Configuration") + 1);
 
-	uint8_t key = 0;
-	// receive key in order to get to menu or go to next 
-	while (key != FNK && key != Input) {
-		key = receiveKey();
-	}
+	uint8_t lastKey = chooseMode(&tempSetIndex, ACCategoryArray, ACCategoryArraySize);
+	if (lastKey == Input) {
+		putStrDirectly(middle, tempCategory, sizeof(tempCategory));
+		controlPanel(&tempCategory, sizeof(tempCategory), base);
 
-	// if user chose Input, change parametrs
-	if (key == Input) {
-		cleanScreen();
-
-
-
+		ACCat->category = tempCategory[0] - '0'; // convert char to int
+		ACCat->set = tempSetIndex;
 
 	}
 }
@@ -152,6 +149,22 @@ void inputSensorAS(uint8_t* sensorMode) {
 
 	if (save == Input) {
 		*sensorMode = tempSensorMode;
+	}
+	cleanScreen();
+}
+
+void inputSIL(uint8_t* SIL_value) {
+	uint8_t tempSIL_value = *SIL_value; // - Security Integrity Level
+
+	// input some title onto display
+
+	putStrDirectly(top, "SIL", sizeof("SIL"));
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
+
+	uint8_t save = chooseMode(&tempSIL_value, SIL_Array, sizeSIL_Array);
+
+	if (save == Input) {
+		*SIL_value = tempSIL_value;
 	}
 	cleanScreen();
 }
@@ -232,11 +245,11 @@ void mainMenu() {
 		inputICAO(&con.ICAO);
 		inputCodeA(&con.codeA);
 		inputCodeVFR(&con.codeVFR);
-		inputFlightNumber(&con.flightNumber, sizeof(&con.flightNumber) + 1); // I don't know why, but sizeof gives 8 instead of 9
+		inputFlightNumber(&con.flightNumber, sizeof(&con.flightNumber) + 1); // I don't know why, but sizeof() gives 8 instead of 9
 		// con.inputVelocityCategory();
-		// con.inputACCategory();
+		inputACCategory(&con.ACCat);
 		inputSensorAS(&con.sensorAS);
-		// sil
+		inputSIL(&con.SIL);
 		inputSize(&con.length, &con.width);
 	}
 }

@@ -56,8 +56,15 @@ enum SIL_Level {
 
 // A/C category
 struct ACCategory { // A/C - aircraft
-	char set;           // set can be A, B and C (D reserved)
+	uint8_t set;           // set can be A, B and C (D reserved)
 	uint8_t category;
+};
+extern const char* ACCategoryArray[];
+extern const uint8_t ACCategoryArraySize;
+enum ACSet {
+	A = 0,
+	B = 1,
+	C = 2
 };
 
 // configuration of A/C
@@ -86,14 +93,13 @@ void inputCodeA(uint16_t* codeA);
 void inputCodeVFR(uint16_t* codeVFR);
 void inputFlightNumber(char flightNumber[], uint8_t numLength);
 // void inputVelocityCategory();
-// void inputACCategory(struct ACCategory* ACCat);
+void inputACCategory(struct ACCategory* ACCat);
 void inputSensorAS(uint8_t* sensorMode);
-void inputSIL(uint8_t SIL_value);
+void inputSIL(uint8_t* SIL_value);
 void inputSize(uint16_t* length, uint16_t* width);
 
 
 void mainMenu();
-
 
 // display work
 void putStrDirectly(uint8_t y, char str[], uint8_t strSize);
