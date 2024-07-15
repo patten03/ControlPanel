@@ -15,11 +15,14 @@ extern const uint8_t sizeSIL_Array = 3;
 extern const char* ACCategoryArray[] = { "A", "B", "C" };
 extern const uint8_t ACCategoryArraySize = 3;
 
+//@brief set all fields of structure to zeros, spaces and standarts values
+//@param[out] con - structure that we inintialize
 void init(struct Configuration* con) {
 	con->ICAO = 0;
 	con->codeA = 0;
 	con->codeVFR = 0;
 
+	// fill all letters to space
 	memset(con->flightNumber, ' ', sizeof(con->flightNumber));
 	con->flightNumber[sizeof(con->flightNumber) - 1] = '\0';
 
@@ -35,6 +38,8 @@ void init(struct Configuration* con) {
 	con->width = 0;
 }
 
+//@brief submenu to input ICAO address
+//@param[out] ICAO - address ICAO in hexademical format
 void inputICAO(uint32_t* ICAO) {
 	char address[7];          // ICAO address as array of digits
 	uint8_t base = 16;        // hexademical base
@@ -55,6 +60,8 @@ void inputICAO(uint32_t* ICAO) {
 	cleanScreen();
 }
 
+//@brief submenu to input code A
+//@param[out] codeA - code A in octal format
 void inputCodeA(uint16_t* codeA) {
 	char code[5];            // code A array as array of digits
 	uint8_t base = 8;        // octal base
@@ -75,6 +82,8 @@ void inputCodeA(uint16_t* codeA) {
 	cleanScreen();
 }
 
+//@brief submenu to input code for visual flight rule
+//@param[out] codeVFR - code of VFR in octal format
 void inputCodeVFR(uint16_t* codeVFR) {
 	char code[5];            // code VFR array of digits
 	uint8_t base = 8;        // octal base
@@ -95,6 +104,9 @@ void inputCodeVFR(uint16_t* codeVFR) {
 	cleanScreen();
 }
 
+//@brief submenu to input flight number
+//@param[out] flightNumber[] - string with flight number, including '\0'
+//@param[in] numLength - size of flightNumber string, includeing '\0'
 void inputFlightNumber(char flightNumber[], uint8_t numLength) {
 	char tempFlightNumber[9]; // flight number 
 	uint8_t base = 37;        // include all digits, letter and space
@@ -106,15 +118,17 @@ void inputFlightNumber(char flightNumber[], uint8_t numLength) {
 	putStrValue(middle, tempFlightNumber, sizeof(tempFlightNumber), -1);
 	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
 
-	uint8_t save = controlPanel(tempFlightNumber, sizeof(tempFlightNumber), base);
+	uint8_t lastKey = controlPanel(tempFlightNumber, sizeof(tempFlightNumber), base);
 
-	if (save == Input) {
+	if (lastKey == Input) {
 		strcpy_s(flightNumber, numLength, tempFlightNumber);
 	}
 
 	cleanScreen();
 }
 
+//@brief submenu to input aircraft category
+//@param[out] ACCat - structure that include set (A, B, C) and number (0-7)
 void inputACCategory(struct ACCategory* ACCat) {
 	uint8_t tempSetIndex = ACCat->set;                     // set of categories for A/C
 	char tempCategory[] = { ACCat->category + '0', '\0' }; // category of A/C
@@ -143,6 +157,9 @@ void inputACCategory(struct ACCategory* ACCat) {
 	cleanScreen();
 }
 
+//@brief submenu to input sensor air-surface mode
+//@param[out] sensorMode - index of current mode of sensor, indexes declared in enum sensorAS_Mode
+// and array of values declared in sensorModesArray[]
 void inputSensorAS(uint8_t* sensorMode) {
 	uint8_t tempSensorMode = *sensorMode;  // Mode of air-surface sensor
 
@@ -160,6 +177,9 @@ void inputSensorAS(uint8_t* sensorMode) {
 	cleanScreen();
 }
 
+//@brief submenu to input safety integrity level
+//@param[out] SIL_value - index of current level, indexes declared in enum SIL_Level
+// and array of level declared in SIL_Array[]
 void inputSIL(uint8_t* SIL_value) {
 	uint8_t tempSIL_value = *SIL_value; // - Security Integrity Level
 
@@ -176,6 +196,9 @@ void inputSIL(uint8_t* SIL_value) {
 	cleanScreen();
 }
 
+//@brief submenu to input size of aircraft
+//@param[out] length - length of aircraft in meters, can be set up to 999 meters
+//@param[out] width - width of aircraft in meters, can be set up to 999 meters
 void inputSize(uint16_t* length, uint16_t* width) {
 	char tempLength[4]; // array of digits for A/C length
 	char tempWidth[4];  // array of digits for A/C width
@@ -231,6 +254,8 @@ void inputSize(uint16_t* length, uint16_t* width) {
 	cleanScreen();
 }
 
+//@brief submenu that fulfills quit from configuration menu, works until Input or FNK key aren't pressed 
+//@return last inputed key, only can return Input (quit) or FNK (continue)
 uint8_t quitConfiguration() {
 	putStrDirectly(top, "Quit", sizeof("Quit"));
 	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
@@ -244,11 +269,13 @@ uint8_t quitConfiguration() {
 	return res;
 }
 
+//@brief main function of program
 void mainMenu() {
 	struct Configuration con;
 	init(&con);
 
 	uint8_t lastKey = 0;
+	// pressed Input means, that user wants to quit
 	while (lastKey != Input) {
 		inputICAO(&con.ICAO);
 		inputCodeA(&con.codeA);
@@ -264,6 +291,10 @@ void mainMenu() {
 	}
 }
 
+//@brief put some text into display with chosen row
+//@param[in] y - coodinate of row
+//@param[in] str[] - just string
+//@param[in] strSize - size of str, including '\0'
 void putStrDirectly(uint8_t y, char str[], uint8_t strSize) {
 	DWORD dw;
 	COORD here;
@@ -279,7 +310,10 @@ void putStrDirectly(uint8_t y, char str[], uint8_t strSize) {
 	WriteConsoleOutputCharacterA(hStdOut, tempStr, strSize - 1, here, &dw);
 }
 
-
+//@brief put some value (ICAO address, code A, flight number etc) into display with chosen row, highlight selected symbol
+//@param[in] y - coodinate of row
+//@param[in] str[] - just value
+//@param[in] strSize - size of str, including '\0'
 //@param[in] chosenSymbol - index of selected symbol that necessay to highlight, if chosenSymbol is equal -1, none of them highlight
 void putStrValue(uint8_t y, char str[], uint8_t strSize, int8_t chosenSymbol) {
 	DWORD dw, write;
@@ -299,6 +333,10 @@ void putStrValue(uint8_t y, char str[], uint8_t strSize, int8_t chosenSymbol) {
 	WriteConsoleOutputCharacterA(hStdOut, tempStr, strSize - 1, here, &dw);
 }
 
+//@brief put some text into display with chosen row, highlight all text
+//@param[in] y - coodinate of row
+//@param[in] str[] - just string
+//@param[in] strSize - size of str, including '\0'
 void putStrMode(uint8_t y, char str[], uint8_t strSize) {
 	DWORD dw, write;
 	COORD here;
@@ -315,10 +353,13 @@ void putStrMode(uint8_t y, char str[], uint8_t strSize) {
 	WriteConsoleOutputCharacterA(hStdOut, str, strSize - 1, here, &dw);
 }
 
+//@brief clean all screen
 void cleanScreen() {
 	system("cls");
 }
 
+//@brief clean selected row
+//@param[in] y - coodinate of row
 void cleanRow(uint8_t y) {
 	DWORD dw, write;
 	COORD here;
@@ -333,12 +374,19 @@ void cleanRow(uint8_t y) {
 	WriteConsoleOutputCharacterA(hStdOut, "                 ", strlen("                 "), here, &dw); // just put empty string to overlap another string
 }
 
+//@brief recieve pressed key
+//@return code of pressed key
 uint8_t receiveKey() {
 	uint8_t res = _getch();
 	return res;
 }
 
-uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base) {
+//@brief part of menu, where user chooses value of ICAO, code A, flight number etc, 
+//@param[out] data[] - string with symbols that user wants to change, include '\0' that can't be changed
+//@param[in] dataLength - size of data[], including '\0'
+//@param[in] base - base that limits input, like octal, demical and hexademical bases. Also allow to use 37 base to input letters
+//@return last inputed key, only can be Input or FNK
+uint8_t controlPanel(char data[], const uint8_t dataLength, const uint8_t base) {
 	uint8_t res;              // last inputed key
 
 	bool done = false;        // loop value
@@ -422,6 +470,9 @@ uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t bas
 	return res;
 }
 
+//@brief convert number to string of digits
+//@param[in] code - number which should be converted
+//@param[out] word - string, that will be showed onto display
 void codeToWord(uint32_t code, char word[], const uint8_t wordLength, const uint8_t base) {
 	memset(word, '0', wordLength - 1); // set all elements of array to 0, except last '\0'
 	uint8_t i = wordLength - 2;
@@ -435,6 +486,10 @@ void codeToWord(uint32_t code, char word[], const uint8_t wordLength, const uint
 	word[wordLength - 1] = '\0';
 }
 
+//@brief convert string of digits to number
+//@param[in] word[] - string, that's necessary to convert
+//@param[in] wordLength - size of word[], including '\0'
+//@param[in] base - base of number (octal, demical, hexademical)
 uint32_t wordToCode(char word[], const uint8_t wordLength, const uint8_t base) {
 	uint32_t res = 0;
 	for (int i = 0; i < wordLength - 1; i++) {
@@ -454,6 +509,11 @@ uint32_t wordToCode(char word[], const uint8_t wordLength, const uint8_t base) {
 	return res;
 }
 
+//@brief part of menu, where user chooses mode of sensor air-surface, SIL level or set of category in ACCategory() 
+//@param[out] mode - current mode as index of arrayModes
+//@param[in] arrayModes - array of modes that user will see
+//@param[int] arraySize - size of array
+//@return last inputed key, only can be Input or FNK
 uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize) {
 	uint8_t res;              // last inputed key
 

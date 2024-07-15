@@ -21,8 +21,8 @@ enum keys {
 	Alt,
 
 	// Other
-	Sign,                                                     // (ZNAK)
-	Input = 's',                                              // (VVOD)
+	Sign,       
+	Input = 's',
 	VFR,                                                      // visual flight rules (PVP)
 	FNK = 'a', FNK_hold10sec,                                 // functional button
 	encoderLeft = 'd', encoderRight = 'f', encoderEnter = ' ' // encoder
@@ -55,7 +55,7 @@ enum SIL_Level {
 };
 
 // A/C category
-struct ACCategory { // A/C - aircraft
+struct ACCategory {        // A/C - aircraft
 	uint8_t set;           // set can be A, B and C (D reserved)
 	uint8_t category;
 };
@@ -75,8 +75,8 @@ struct Configuration {
 	char flightNumber[9];
 	uint8_t velocityCategory;
 	struct ACCategory ACCat;
-	uint8_t sensorAS;
-	uint8_t SIL;
+	uint8_t sensorAS;           // sensor air-surface
+	uint8_t SIL;                // safety integrity level
 
 	// aircraft size
 	uint16_t length;
@@ -84,10 +84,12 @@ struct Configuration {
 };
 
 // structure functions
+
 void init(struct Configuration* con);
 void loadFromUART(struct Configuration* con);
 
 // structure functions, submenus to input data
+
 void inputICAO(uint32_t* ICAO);
 void inputCodeA(uint16_t* codeA);
 void inputCodeVFR(uint16_t* codeVFR);
@@ -100,19 +102,27 @@ void inputSize(uint16_t* length, uint16_t* width);
 uint8_t quitConfiguration();
 
 // main loop of program
+
 void mainMenu();
 
 // display work
+
 void putStrDirectly(uint8_t y, char str[], uint8_t strSize);
 void putStrValue(uint8_t y, char str[], uint8_t strSize, uint8_t chosenSymbol);
 void putStrMode(uint8_t y, char str[], uint8_t strSize);
 void cleanScreen();
 void cleanRow(uint8_t y);
 
+// function that gives pressed key code
 
 uint8_t receiveKey();
-uint8_t controlPanel(uint8_t data[], const uint8_t dataLength, const uint8_t base);
+
+// input menus
+
+uint8_t controlPanel(char data[], const uint8_t dataLength, const uint8_t base);
 uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize);
+
+// work with encoding word to code and reversed
 
 void codeToWord(uint32_t code, char word[], const uint8_t wordLength, const uint8_t base);
 uint32_t wordToCode(char word[], const uint8_t wordLength, const uint8_t base);
