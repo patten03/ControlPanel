@@ -15,6 +15,10 @@ extern const uint8_t sizeSIL_Array = 3;
 extern const char* ACCategoryArray[] = { "A", "B", "C" };
 extern const uint8_t ACCategoryArraySize = 3;
 
+// A/C height
+extern const char* heightUnitsArray[] = { "Feet", "Meters" };
+extern const uint8_t heightUnitsArraySize = 2;
+
 //@brief set all fields of structure to zeros, spaces and standarts values
 //@param[out] con - structure that we inintialize
 void init(struct Configuration* con) {
@@ -33,6 +37,8 @@ void init(struct Configuration* con) {
 
 	con->sensorAS = sensorOff;
 	con->SIL = low;
+
+	con->heightUnit = meter;
 
 	con->length = 0;
 	con->width = 0;
@@ -254,6 +260,22 @@ void inputSize(uint16_t* length, uint16_t* width) {
 	cleanScreen();
 }
 
+void changeHeightInits(uint8_t* heightUnit) {
+	uint8_t temp_heightUnit = *heightUnit;
+
+	// input some title onto display
+	putStrDirectly(top, "Meters/Feet", sizeof("Meters/Feet"));
+	putStrDirectly(middle, heightUnitsArray[temp_heightUnit], strlen(heightUnitsArray[temp_heightUnit]) + 1);
+	putStrDirectly(bottom, "Configuration", sizeof("Configuration"));
+
+	uint8_t lastKey = chooseMode(&temp_heightUnit, heightUnitsArray, heightUnitsArraySize);
+
+	if (lastKey == Input) {
+		*heightUnit = temp_heightUnit;
+	}
+	cleanScreen();
+}
+
 //@brief submenu that fulfills quit from configuration menu, works until Input or FNK key aren't pressed 
 //@return last inputed key, only can return Input (quit) or FNK (continue)
 uint8_t quitConfiguration() {
@@ -285,6 +307,7 @@ void mainMenu() {
 		inputACCategory(&con.ACCat);
 		inputSensorAS(&con.sensorAS);
 		inputSIL(&con.SIL);
+		changeHeightInits(&con.heightUnit);
 		inputSize(&con.length, &con.width);
 
 		lastKey = quitConfiguration();

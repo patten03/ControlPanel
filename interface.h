@@ -67,6 +67,14 @@ enum ACSet {
 	C = 2
 };
 
+// Height of A/C
+extern const char* heightUnitsArray[];
+extern const uint8_t heightUnitsArraySize;
+enum heightUnit {
+	foot = 0,
+	meter = 1
+};
+
 // configuration of A/C
 struct Configuration {
 	uint32_t ICAO;
@@ -77,6 +85,8 @@ struct Configuration {
 	struct ACCategory ACCat;
 	uint8_t sensorAS;           // sensor air-surface
 	uint8_t SIL;                // safety integrity level
+
+	uint8_t heightUnit;
 
 	// aircraft size
 	uint16_t length;
@@ -99,6 +109,9 @@ void inputACCategory(struct ACCategory* ACCat);
 void inputSensorAS(uint8_t* sensorMode);
 void inputSIL(uint8_t* SIL_value);
 void inputSize(uint16_t* length, uint16_t* width);
+
+void changeHeightInits(uint8_t* heightUnit);
+
 uint8_t quitConfiguration();
 
 // main loop of program
