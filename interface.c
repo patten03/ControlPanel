@@ -21,7 +21,7 @@ extern const uint8_t heightUnitsArraySize = 2;
 
 //@brief set all fields of structure to zeros, spaces and standarts values
 //@param[out] con - structure that we inintialize
-void init(struct Configuration* con) {
+void initConfiguration(struct Configuration* con) {
 	con->ICAO = 0;
 	con->codeA = 0;
 	con->codeVFR = 0;
@@ -260,6 +260,8 @@ void inputSize(uint16_t* length, uint16_t* width) {
 	cleanScreen();
 }
 
+//@brief submenu, where user changes units of measurement for A/C's height
+//@param[out] heightUnit - index of current measurement in heightUnitsArray[]
 void changeHeightInits(uint8_t* heightUnit) {
 	uint8_t temp_heightUnit = *heightUnit;
 
@@ -293,8 +295,8 @@ uint8_t quitConfiguration() {
 
 //@brief main function of program
 void mainMenu() {
-	struct Configuration con;
-	init(&con);
+	//struct Configuration con;
+	initConfiguration(&con);
 
 	uint8_t lastKey = 0;
 	// pressed Input means, that user wants to quit

@@ -2,12 +2,12 @@
 #define INTERFACE
 
 #include <stdio.h>
-#include <conio.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 #include <Windows.h>
+#include <conio.h>
 
 extern const char baseAndLetters[];
 
@@ -75,6 +75,14 @@ enum heightUnit {
 	meter = 1
 };
 
+// current state of A/C
+struct State {
+	uint8_t switchMode;
+	uint32_t height;
+	uint8_t assistField;
+
+};
+
 // configuration of A/C
 struct Configuration {
 	uint32_t ICAO;
@@ -93,9 +101,14 @@ struct Configuration {
 	uint16_t width;
 };
 
+// global structure for configuration of A/C
+struct Configuration con;
+// global stucture for state of A/C
+struct State state;
+
 // structure functions
 
-void init(struct Configuration* con);
+void initConfiguration(struct Configuration* con);
 void loadFromUART(struct Configuration* con);
 
 // structure functions, submenus to input data
