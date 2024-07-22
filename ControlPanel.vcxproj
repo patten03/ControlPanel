@@ -127,10 +127,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="buttons.c" />
     <ClCompile Include="ControlPanel.c" />
+    <ClCompile Include="display.c" />
     <ClCompile Include="interface.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="buttons.h" />
+    <ClInclude Include="display.h" />
     <ClInclude Include="interface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
