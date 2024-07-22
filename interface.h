@@ -102,7 +102,7 @@ struct Configuration {
 	uint32_t ICAO;
 	uint16_t codeA;
 	uint16_t codeVFR;
-	char flightNumber[FLIGHT_NUM_SIZE];
+	char flightNumber[FLIGHT_NUM_SIZE + 1];
 	uint8_t velocityCategory;
 	struct ACCategory ACCat;
 	uint8_t sensorAS;           // sensor air-surface
