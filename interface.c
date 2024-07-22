@@ -44,6 +44,16 @@ void initConfiguration(struct Configuration* con) {
 	con->width = 0;
 }
 
+//@brief set all field of structure to zeros
+//@param[out] stat - structure that we inintialize
+void initState(struct State* stat) {
+	stat->switchMode = 0;
+	stat->assistField = 0;
+	stat->height = 0;
+	stat->longitude = 0.f;
+	stat->latitude = 0.f;
+}
+
 //@brief submenu to input ICAO address
 //@param[out] ICAO - address ICAO in hexademical format
 void inputICAO(uint32_t* ICAO) {
@@ -295,24 +305,31 @@ uint8_t quitConfiguration() {
 
 //@brief main function of program
 void mainMenu() {
-	//struct Configuration con;
 	initConfiguration(&con);
+	initState(&state);
 
-	uint8_t lastKey = 0;
-	// pressed Input means, that user wants to quit
-	while (lastKey != Input) {
-		inputICAO(&con.ICAO);
-		inputCodeA(&con.codeA);
-		inputCodeVFR(&con.codeVFR);
-		inputFlightNumber(&con.flightNumber, sizeof(&con.flightNumber) + 1); // I don't know why, but sizeof() gives 8 instead of 9
-		//inputVelocityCategory();
-		inputACCategory(&con.ACCat);
-		inputSensorAS(&con.sensorAS);
-		inputSIL(&con.SIL);
-		changeHeightInits(&con.heightUnit);
-		inputSize(&con.length, &con.width);
+	while (true) {
+		char buffStr[5];
+		codeToWord(con.codeA, buffStr, sizeof(buffStr), 10);
+		putStrInField(right, top, buffStr, strlen(buffStr) + 1);
 
-		lastKey = quitConfiguration();
+
+		uint8_t key;
+		key = receiveKey();
+
+		switch (key) {
+		case FNK_hold10sec: {
+			cleanScreen();
+			configurationMenu();
+		} break;
+
+		case FNK: {
+			cleanScreen();
+			coordMenu();
+		} break;
+
+		default: break;
+		}
 	}
 }
 
@@ -378,6 +395,25 @@ void putStrMode(uint8_t y, char str[], uint8_t strSize) {
 	WriteConsoleOutputCharacterA(hStdOut, str, strSize - 1, here, &dw);
 }
 
+//@brief put some text into display with chosen row and column
+//@param[in] x, y - coodinates of row and column
+//@param[in] str[] - just string
+//@param[in] strSize - size of str, including '\0'
+void putStrInField(uint8_t x, uint8_t y, char str[], uint8_t strSize) {
+	DWORD dw;
+	COORD here;
+	here.X = x;
+	here.Y = y;
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hStdOut == INVALID_HANDLE_VALUE) {
+		printf("Invalid handle");
+	}
+
+	LPCSTR tempStr = str;
+
+	WriteConsoleOutputCharacterA(hStdOut, tempStr, strSize - 1, here, &dw);
+}
+
 //@brief clean all screen
 void cleanScreen() {
 	system("cls");
@@ -397,6 +433,23 @@ void cleanRow(uint8_t y) {
 
 	FillConsoleOutputAttribute(hStdOut, 0b00000111, strlen("                 "), here, &write);
 	WriteConsoleOutputCharacterA(hStdOut, "                 ", strlen("                 "), here, &dw); // just put empty string to overlap another string
+}
+
+//@brief clean selected row
+//@param[in] x, y - coodinates of row column
+void cleanField(uint8_t x, uint8_t y) {
+	DWORD dw, write;
+	COORD here;
+	here.X = x;
+	here.Y = y;
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hStdOut == INVALID_HANDLE_VALUE) {
+		printf("Invalid handle");
+	}
+
+	FillConsoleOutputAttribute(hStdOut, 0b00000111, strlen("         "), here, &write);
+	WriteConsoleOutputCharacterA(hStdOut, "         ", strlen("         "), here, &dw); // just put empty string to overlap another string
+
 }
 
 //@brief recieve pressed key
@@ -597,4 +650,29 @@ uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize) {
 	}
 
 	return res;
+}
+
+//@brief menu with submenus to change configurations of A/C
+void configurationMenu() {
+	uint8_t lastKey = 0;
+
+	// pressed Input means, that user wants to quit
+	while (lastKey != Input) {
+		inputICAO(&con.ICAO);
+		inputCodeA(&con.codeA);
+		inputCodeVFR(&con.codeVFR);
+		inputFlightNumber(&con.flightNumber, sizeof(&con.flightNumber) + 1); // I don't know why, but sizeof() gives 8 instead of 9
+		//inputVelocityCategory();
+		inputACCategory(&con.ACCat);
+		inputSensorAS(&con.sensorAS);
+		inputSIL(&con.SIL);
+		changeHeightInits(&con.heightUnit);
+		inputSize(&con.length, &con.width);
+
+		lastKey = quitConfiguration();
+	}
+}
+
+void coordMenu() {
+	return;
 }

@@ -11,20 +11,19 @@
 
 extern const char baseAndLetters[];
 
-// TODO after import to keil you have to change keys values
 enum keys {
 	// Toggle of modes
 	Off,
 	SBY,
 	GND,
-	On = 'q',
+	On,
 	Alt,
 
 	// Other
 	Sign,       
 	Input = 's',
 	VFR,                                                      // visual flight rules (PVP)
-	FNK = 'a', FNK_hold10sec,                                 // functional button
+	FNK = 'a', FNK_hold10sec = 'q',                                 // functional button
 	encoderLeft = 'd', encoderRight = 'f', encoderEnter = ' ' // encoder
 };
 
@@ -34,6 +33,10 @@ enum displayRow {
 	bottom = 4
 };
 
+enum displayColumn {
+	left = 0,
+	right = 10
+};
 
 // Sensor air-surface
 extern const char* sensorModesArray[];
@@ -81,6 +84,8 @@ struct State {
 	uint32_t height;
 	uint8_t assistField;
 
+	float longitude;
+	float latitude;
 };
 
 // configuration of A/C
@@ -101,17 +106,21 @@ struct Configuration {
 	uint16_t width;
 };
 
-// global structure for configuration of A/C
-struct Configuration con;
-// global stucture for state of A/C
-struct State state;
+// global structures
 
-// structure functions
+struct Configuration con; // configuration of A / C
+struct State state;       // state of A/C
+
+// structure configuration functions
 
 void initConfiguration(struct Configuration* con);
 void loadFromUART(struct Configuration* con);
 
-// structure functions, submenus to input data
+// structure status functions
+
+void initStatus(struct Status* status);
+
+// structure functions configuration, submenus to input data
 
 void inputICAO(uint32_t* ICAO);
 void inputCodeA(uint16_t* codeA);
@@ -122,7 +131,6 @@ void inputACCategory(struct ACCategory* ACCat);
 void inputSensorAS(uint8_t* sensorMode);
 void inputSIL(uint8_t* SIL_value);
 void inputSize(uint16_t* length, uint16_t* width);
-
 void changeHeightInits(uint8_t* heightUnit);
 
 uint8_t quitConfiguration();
@@ -130,14 +138,18 @@ uint8_t quitConfiguration();
 // main loop of program
 
 void mainMenu();
+void configurationMenu();
+void coordMenu();
 
 // display work
 
 void putStrDirectly(uint8_t y, char str[], uint8_t strSize);
 void putStrValue(uint8_t y, char str[], uint8_t strSize, uint8_t chosenSymbol);
 void putStrMode(uint8_t y, char str[], uint8_t strSize);
+void putStrInField(uint8_t x, uint8_t y, char str[], uint8_t strSize);
 void cleanScreen();
 void cleanRow(uint8_t y);
+void cleanField(uint8_t x, uint8_t y);
 
 // function that gives pressed key code
 
