@@ -23,7 +23,7 @@ enum keys {
 	Sign,       
 	Input = 's',
 	VFR,                                                      // visual flight rules (PVP)
-	FNK = 'a', FNK_hold10sec = 'q',                                 // functional button
+	FNK = 'a', FNK_hold10sec = 'q',                           // functional button
 	encoderLeft = 'd', encoderRight = 'f', encoderEnter = ' ' // encoder
 };
 

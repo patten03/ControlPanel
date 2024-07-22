@@ -1,5 +1,14 @@
 #include "interface.h"
 
+// legthes of input values
+
+#define ICAO_ADDRESS_SIZE 6
+#define CODE_A_SIZE       4
+#define CODE_VFR_SIZE     4
+#define FLIGHT_NUM_SIZE   8
+
+
+
 // In order to input octal, demical and hexademical bases and letters (including space)
 extern const char baseAndLetters[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 
@@ -57,8 +66,8 @@ void initState(struct State* stat) {
 //@brief submenu to input ICAO address
 //@param[out] ICAO - address ICAO in hexademical format
 void inputICAO(uint32_t* ICAO) {
-	char address[7];          // ICAO address as array of digits
-	uint8_t base = 16;        // hexademical base
+	char address[ICAO_ADDRESS_SIZE + 1];   // ICAO address as array of digits
+	uint8_t base = 16;                     // hexademical base
 
 	codeToWord(*ICAO, address, sizeof(address), base);
 
@@ -79,8 +88,8 @@ void inputICAO(uint32_t* ICAO) {
 //@brief submenu to input code A
 //@param[out] codeA - code A in octal format
 void inputCodeA(uint16_t* codeA) {
-	char code[5];            // code A array as array of digits
-	uint8_t base = 8;        // octal base
+	char code[CODE_A_SIZE + 1];  // code A array as array of digits
+	uint8_t base = 8;            // octal base
 
 	codeToWord(*codeA, code, sizeof(code), base);
 
@@ -101,8 +110,8 @@ void inputCodeA(uint16_t* codeA) {
 //@brief submenu to input code for visual flight rule
 //@param[out] codeVFR - code of VFR in octal format
 void inputCodeVFR(uint16_t* codeVFR) {
-	char code[5];            // code VFR array of digits
-	uint8_t base = 8;        // octal base
+	char code[CODE_VFR_SIZE + 1];   // code VFR array of digits
+	uint8_t base = 8;               // octal base
 
 	codeToWord(*codeVFR, code, sizeof(code), base);
 
@@ -124,8 +133,8 @@ void inputCodeVFR(uint16_t* codeVFR) {
 //@param[out] flightNumber[] - string with flight number, including '\0'
 //@param[in] numLength - size of flightNumber string, includeing '\0'
 void inputFlightNumber(char flightNumber[], uint8_t numLength) {
-	char tempFlightNumber[9]; // flight number 
-	uint8_t base = 37;        // include all digits, letter and space
+	char tempFlightNumber[FLIGHT_NUM_SIZE + 1]; // flight number 
+	uint8_t base = 37;                          // include all digits, letter and space
 
 	strcpy_s(tempFlightNumber, sizeof(tempFlightNumber), flightNumber);
 
