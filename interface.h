@@ -11,6 +11,13 @@
 #include <Windows.h>
 #include <conio.h>
 
+// legthes of input values
+
+#define ICAO_ADDRESS_SIZE 6
+#define CODE_A_SIZE       4
+#define CODE_VFR_SIZE     4
+#define FLIGHT_NUM_SIZE   8
+
 extern const char baseAndLetters[];
 
 enum keys {
@@ -22,7 +29,7 @@ enum keys {
 	Alt,
 
 	// Other
-	Sign,       
+	Sign,
 	Input = 's',
 	VFR,                                                      // visual flight rules (PVP)
 	FNK = 'a', FNK_hold10sec = 'q',                           // functional button
@@ -95,7 +102,7 @@ struct Configuration {
 	uint32_t ICAO;
 	uint16_t codeA;
 	uint16_t codeVFR;
-	char flightNumber[9];
+	char flightNumber[FLIGHT_NUM_SIZE];
 	uint8_t velocityCategory;
 	struct ACCategory ACCat;
 	uint8_t sensorAS;           // sensor air-surface

@@ -1,14 +1,5 @@
 #include "interface.h"
 
-// legthes of input values
-
-#define ICAO_ADDRESS_SIZE 6
-#define CODE_A_SIZE       4
-#define CODE_VFR_SIZE     4
-#define FLIGHT_NUM_SIZE   8
-
-
-
 // In order to input octal, demical and hexademical bases and letters (including space)
 extern const char baseAndLetters[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 
@@ -327,12 +318,14 @@ void mainMenu() {
 		key = receiveKey();
 
 		switch (key) {
-		case FNK_hold10sec: {
+		case FNK_hold10sec:
+		{
 			cleanScreen();
 			configurationMenu();
 		} break;
 
-		case FNK: {
+		case FNK:
+		{
 			cleanScreen();
 			coordMenu();
 		} break;
