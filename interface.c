@@ -29,28 +29,28 @@ extern const char* heightUnitsArray[] = { "Feet", "Meters" };
 extern const uint8_t heightUnitsArraySize = 2;
 
 //@brief set all fields of structure to zeros, spaces and standarts values
-//@param[out] con - structure that we inintialize
-void initConfiguration(struct Configuration* con) {
-	con->ICAO = 0;
-	con->codeA = 0;
-	con->codeVFR = 0;
+//@param[out] Con - structure that we inintialize
+void initConfiguration(struct Configuration* Con) {
+	Con->ICAO = 0;
+	Con->codeA = 0;
+	Con->codeVFR = 0;
 
 	// fill all letters to space
-	memset(con->flightNumber, ' ', sizeof(con->flightNumber));
-	con->flightNumber[sizeof(con->flightNumber) - 1] = '\0';
+	memset(Con->flightNumber, ' ', sizeof(Con->flightNumber));
+	Con->flightNumber[sizeof(Con->flightNumber) - 1] = '\0';
 
-	con->velocityCategory = 0;
+	Con->velocityCategory = 0;
 
-	con->ACCat.set = A;
-	con->ACCat.category = 0;
+	Con->ACCat.set = A;
+	Con->ACCat.category = 0;
 
-	con->sensorAS = sensorOff;
-	con->SIL = low;
+	Con->sensorAS = sensorOff;
+	Con->SIL = low;
 
-	con->heightUnit = meter;
+	Con->heightUnit = meter;
 
-	con->length = 0;
-	con->width = 0;
+	Con->length = 0;
+	Con->width = 0;
 }
 
 //@brief set all field of structure to zeros
@@ -314,14 +314,14 @@ uint8_t quitConfiguration() {
 
 //@brief main function of program
 void mainMenu() {
-	initConfiguration(&con);
-	initState(&state);
+	initConfiguration(&Con);
+	initState(&Stat);
 
 	while (true) {
-		char buffStr[5];
-		codeToWord(con.codeA, buffStr, sizeof(buffStr), 10);
+		char buffStr[CODE_A_SIZE + 1];
+		codeToWord(Con.codeA, buffStr, sizeof(buffStr), 10);
 		putStrInField(right, top, buffStr, strlen(buffStr) + 1);
-
+		putStrInField(left, middle, Con.flightNumber, strlen(Con.flightNumber) + 1);
 
 		uint8_t key;
 		key = receiveKey();
@@ -541,16 +541,16 @@ void configurationMenu() {
 
 	// pressed Input means, that user wants to quit
 	while (lastKey != Input) {
-		inputICAO(&con.ICAO);
-		inputCodeA(&con.codeA);
-		inputCodeVFR(&con.codeVFR);
-		inputFlightNumber(&con.flightNumber, sizeof(&con.flightNumber) + 1); // I don't know why, but sizeof() gives 8 instead of 9
+		inputICAO(&Con.ICAO);
+		inputCodeA(&Con.codeA);
+		inputCodeVFR(&Con.codeVFR);
+		inputFlightNumber(&Con.flightNumber, sizeof(&Con.flightNumber) + 1); // I don't know why, but sizeof() gives 8 instead of 9
 		//inputVelocityCategory();
-		inputACCategory(&con.ACCat);
-		inputSensorAS(&con.sensorAS);
-		inputSIL(&con.SIL);
-		changeHeightInits(&con.heightUnit);
-		inputSize(&con.length, &con.width);
+		inputACCategory(&Con.ACCat);
+		inputSensorAS(&Con.sensorAS);
+		inputSIL(&Con.SIL);
+		changeHeightInits(&Con.heightUnit);
+		inputSize(&Con.length, &Con.width);
 
 		lastKey = quitConfiguration();
 	}

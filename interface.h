@@ -110,17 +110,17 @@ struct Configuration {
 
 // global structures
 
-struct Configuration con; // configuration of A / C
-struct State state;       // state of A/C
+struct Configuration Con; // configuration of A / C
+struct State Stat;       // state of A/C
 
 // structure configuration functions
 
-void initConfiguration(struct Configuration* con);
-void loadFromUART(struct Configuration* con);
+void initConfiguration(struct Configuration* Con);
+void loadFromUART(struct Configuration* Con);
 
 // structure status functions
 
-void initStatus(struct Status* status);
+void initStatus(struct State* state);
 
 // structure functions configuration, submenus to input data
 
