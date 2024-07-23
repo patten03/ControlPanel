@@ -552,3 +552,111 @@ void configurationMenu() {
 void coordMenu() {
 	return;
 }
+
+//@brief find index of closest number from array to a target, is used in convertHeight()
+//@param[in] arr - just array
+//@param[in] size - size of array
+//@param[in] target - given number, to that we need find the closest value
+//@return index from array to the closest number to the target
+uint8_t findClosest(int16_t arr[], uint8_t size, int16_t target) {
+	// finding the closest number to target by binary search
+	int8_t low = 0;
+	int8_t mid = 0;
+	int8_t high = size - 1;
+	while (low <= high) {
+		mid = low + (high - low) / 2;
+
+		// check if target is present at mid
+		if (arr[mid] == target)
+			return mid;
+
+		// if target greater, ignore left half
+		if (arr[mid] < target) {
+			low = mid + 1;
+		}
+
+
+		// if target is smaller, ignore right half
+		else {
+			high = mid - 1;
+		}
+
+	}
+
+	// only single element left after search
+	// check neighbors, are they closer to the target
+	if ((abs(arr[mid] - target) > abs(arr[mid - 1] - target)) && mid != 0)
+		mid--;
+	if (abs(arr[mid] - target) > abs(arr[mid + 1] - target) && mid != (size - 1))
+		mid++;
+
+	return mid;
+}
+
+//@brief round height by table for IFR and convert it to chosen unit of measurement
+//@param[in] heightTarget - heigth that it converts
+//@param[in] unit - unit of measurement of returning height
+//@return rounded and converted number in meters or feet
+int16_t convertHeight(int16_t heightTarget, enum heightUnit unit) {
+	// height's table for Instrument Flight Rules (IFR)
+	const uint16_t metersTable[] = {
+		300,
+		900,
+		1500,
+		2150,
+		2750,
+		3350,
+		3950,
+		4550,
+		5200,
+		5800,
+		6400,
+		7000,
+		7600,
+		8250,
+		8850,
+		9450,
+		10050,
+		10650,
+		11300,
+		11900,
+		12500,
+		13700,
+		14950
+	};
+
+	const uint16_t FL_Table[] = {
+		10,
+		30,
+		50,
+		70,
+		90,
+		110,
+		130,
+		150,
+		170,
+		190,
+		210,
+		230,
+		250,
+		270,
+		290,
+		310,
+		330,
+		350,
+		370,
+		390,
+		410,
+		450,
+		490
+	};
+
+	// find the closest value in meters
+	uint8_t index = findClosest(metersTable, sizeof(metersTable) / sizeof(metersTable[0]), heightTarget);
+	
+	// return value in choosen unit of measurement (found index match to 2 tables)
+	if (unit == meter)
+		return metersTable[index];
+	else
+		return FL_Table[index];
+}

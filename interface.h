@@ -83,7 +83,7 @@ enum ACSet {
 extern const char* heightUnitsArray[];
 extern const uint8_t heightUnitsArraySize;
 enum heightUnit {
-	foot = 0,
+	FL = 0,
 	meter = 1
 };
 
@@ -159,5 +159,10 @@ uint8_t chooseMode(uint8_t* mode, char** arrayModes, uint8_t arraySize);
 
 void codeToWord(uint32_t code, char word[], const uint8_t wordLength, const uint8_t base);
 uint32_t wordToCode(char word[], const uint8_t wordLength, const uint8_t base);
+
+// convert received height to table by IFR
+
+int16_t convertHeight(int16_t heightTarget, enum heightUnit unit);
+uint8_t findClosest(int16_t arr[], uint8_t size, int16_t target);
 
 #endif // INTERFACE
